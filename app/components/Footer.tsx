@@ -48,10 +48,10 @@ export function Footer() {
             &copy; {currentYear} QR Yoklama Sistemi. Tüm hakları saklıdır.
           </p>
           <div className="flex gap-4 mt-0">
-            <a href="#" className="text-xs md:text-sm text-gray-300 hover:text-white transition-colors">
+            <a href="/gizlilik" className="text-xs md:text-sm text-gray-300 hover:text-white transition-colors">
               Gizlilik
             </a>
-            <a href="#" className="text-xs md:text-sm text-gray-300 hover:text-white transition-colors">
+            <a href="/kosullar" className="text-xs md:text-sm text-gray-300 hover:text-white transition-colors">
               Koşullar
             </a>
           </div>
