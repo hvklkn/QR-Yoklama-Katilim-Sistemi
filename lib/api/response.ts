@@ -1,8 +1,7 @@
 import { ApiResponse } from "@/types";
 
 export function createSuccessResponse<T>(
-  data: T,
-  message?: string
+  data: T
 ): ApiResponse<T> {
   return {
     success: true,
