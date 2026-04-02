@@ -324,6 +324,7 @@ function BulkImportForm({ eventId, onSuccess }: BulkImportFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [fileInputKey, setFileInputKey] = useState(0);
 
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
@@ -339,22 +340,42 @@ function BulkImportForm({ eventId, onSuccess }: BulkImportFormProps) {
       // Parse CSV
       const text = await file.text();
       const lines = text.split("\n");
+      if (lines.length < 2) {
+        throw new Error("CSV dosyası boş veya geçersiz");
+      }
+
       const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+
+      // Header indeksleri bul - düzeltilmiş logic
+      const getHeaderIndex = (possibleNames: string[]): number => {
+        const idx = headers.findIndex((h) => possibleNames.includes(h));
+        return idx >= 0 ? idx : -1;
+      };
+
+      const firstNameIdx = getHeaderIndex(["ad", "firstname", "first_name"]);
+      const lastNameIdx = getHeaderIndex(["soyad", "lastname", "last_name"]);
+      const emailIdx = getHeaderIndex(["eposta", "email", "e-mail", "e_mail"]);
+      const phoneIdx = getHeaderIndex(["telefon", "phone", "tel", "cep"]);
+
+      if (firstNameIdx === -1 || lastNameIdx === -1 || emailIdx === -1) {
+        throw new Error("CSV'de zorunlu sütunlar eksik: Ad, Soyad, E-posta");
+      }
 
       let imported = 0;
       let failed = 0;
+      const failedRows: string[] = [];
 
       for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
 
         const values = lines[i].split(",").map((v) => v.trim());
-        const firstNameIdx = headers.indexOf("ad") || headers.indexOf("firstname") || 0;
-        const lastNameIdx =
-          headers.indexOf("soyad") ||
-          headers.indexOf("lastname") ||
-          1;
-        const emailIdx = headers.indexOf("eposta") || headers.indexOf("email") || 2;
-        const phoneIdx = headers.indexOf("telefon") || headers.indexOf("phone") || 3;
+        
+        // Zorunlu alanlar kontrol et
+        if (!values[firstNameIdx] || !values[lastNameIdx] || !values[emailIdx]) {
+          failed++;
+          failedRows.push(`Satır ${i + 1}: Eksik zorunlu alan`);
+          continue;
+        }
 
         try {
           const response = await fetch("/api/participants", {
@@ -364,28 +385,37 @@ function BulkImportForm({ eventId, onSuccess }: BulkImportFormProps) {
             },
             body: JSON.stringify({
               eventId,
-              firstName: values[firstNameIdx] || "",
-              lastName: values[lastNameIdx] || "",
-              email: values[emailIdx] || "",
+              firstName: values[firstNameIdx],
+              lastName: values[lastNameIdx],
+              email: values[emailIdx],
               phone: values[phoneIdx] || "",
               isPreRegistered: true,
             }),
           });
 
+          const data = await response.json();
+
           if (response.ok) {
             imported++;
           } else {
             failed++;
+            failedRows.push(`Satır ${i + 1}: ${data.error?.message || "Hata"}`);
           }
-        } catch {
+        } catch (err) {
           failed++;
+          failedRows.push(`Satır ${i + 1}: ${err instanceof Error ? err.message : "Bağlantı hatası"}`);
         }
       }
 
+      if (imported === 0) {
+        throw new Error(`İçe aktarma başarısız! ${failedRows.slice(0, 3).join(", ")}`);
+      }
+
       setSuccess(
-        `${imported} katılımcı başarıyla içe aktarıldı${failed > 0 ? `, ${failed} başarısız` : ""}`
+        `✓ ${imported} katılımcı başarıyla içe aktarıldı${failed > 0 ? `, ${failed} başarısız` : ""}`
       );
-      onSuccess();
+      setFileInputKey((prev) => prev + 1); // Input'u reset et
+      setTimeout(() => onSuccess(), 1500);
     } catch (err) {
       const message = err instanceof Error ? err.message : "CSV işlenemedi";
       setError(message);
@@ -395,34 +425,51 @@ function BulkImportForm({ eventId, onSuccess }: BulkImportFormProps) {
   };
 
   return (
-    <div className="card p-6 mb-6">
-      <h2 className="text-lg font-bold text-gray-900 mb-4">
-        CSV İçe Aktarma
+    <div className="card-elevated p-8 mb-6 bg-gradient-to-br from-yellow-50 to-white border-l-4 border-yellow-600 fade-in">
+      <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+        📥 CSV İçe Aktarma
       </h2>
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
-          {error}
+        <div className="mb-4 p-4 bg-red-50 border-l-4 border-red-500 rounded text-red-700 text-sm font-medium">
+          ❌ {error}
         </div>
       )}
       {success && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
+        <div className="mb-4 p-4 bg-green-50 border-l-4 border-green-500 rounded text-green-700 text-sm font-medium">
           {success}
         </div>
       )}
-      <div className="space-y-3">
-        <p className="text-sm text-gray-600">
-          CSV dosyasını şu sütun adlarıyla yükleyin:
-          <code className="block bg-gray-100 p-2 rounded mt-2 text-xs">
-            Ad, Soyad, E-posta, Telefon
+      <div className="space-y-4">
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <p className="text-sm text-gray-700 mb-2 font-medium">📋 CSV formatı örneği:</p>
+          <code className="block bg-white p-3 rounded text-xs text-gray-800 font-mono overflow-x-auto border border-blue-100">
+            Ad,Soyad,E-posta,Telefon{"\n"}
+            Ahmet,Yılmaz,ahmet@example.com,05551234567{"\n"}
+            Ayşe,Kaya,ayse@example.com,05559876543
           </code>
-        </p>
-        <input
-          type="file"
-          accept=".csv"
-          onChange={handleFileUpload}
-          disabled={isLoading}
-          className="input-base"
-        />
+          <p className="text-xs text-gray-600 mt-2">
+            ℹ️ Sütun adları: ad, soyad, e-posta (zorunlu) + telefon (opsiyonel)
+          </p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            CSV Dosyası Seç:
+          </label>
+          <input
+            key={fileInputKey}
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            disabled={isLoading}
+            className="block w-full text-sm border-2 border-dashed border-gray-300 rounded-lg p-3 cursor-pointer hover:border-yellow-500 focus:outline-none focus:border-yellow-600 transition-colors"
+          />
+        </div>
+        {isLoading && (
+          <div className="flex items-center gap-2 text-yellow-700 font-medium">
+            <div className="spinner w-5 h-5 border-2 border-yellow-200 border-t-yellow-600 rounded-full animate-spin"></div>
+            İçe aktarılıyor...
+          </div>
+        )}
       </div>
     </div>
   );
