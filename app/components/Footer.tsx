@@ -16,17 +16,17 @@ export function Footer() {
             <h4 className="font-semibold text-white mb-3 md:mb-4 text-base md:text-lg">Özellikler</h4>
             <ul className="space-y-2 text-xs md:text-sm text-gray-300">
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="/ozellikler/dinamik-qr" className="hover:text-white transition-colors">
                   Dinamik QR Kodlar
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="/ozellikler/lokasyon-dogrulamasi" className="hover:text-white transition-colors">
                   Lokasyon Doğrulaması
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition-colors">
+                <a href="/ozellikler/csv-export" className="hover:text-white transition-colors">
                   CSV Export
                 </a>
               </li>
