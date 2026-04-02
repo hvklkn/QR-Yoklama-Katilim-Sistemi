@@ -14,6 +14,18 @@ interface AdminSession {
 
 const activeSessions = new Map<string, AdminSession>();
 
+// Debug logging
+const isDev = process.env.NODE_ENV === "development";
+const log = (message: string, data?: any) => {
+  if (isDev) {
+    console.log(`[AdminAuth] ${message}`, data ? JSON.stringify(data, null, 2) : "");
+  }
+};
+
+const error = (message: string, data?: any) => {
+  console.error(`[AdminAuth] ERROR: ${message}`, data ? JSON.stringify(data, null, 2) : "");
+};
+
 /**
  * Validates admin credentials
  */
@@ -21,7 +33,18 @@ export function validateAdminCredentials(
   email: string,
   password: string
 ): boolean {
-  return email === ADMIN_EMAIL && password === ADMIN_PASSWORD;
+  log("Validating credentials", { email, providedEmail: email, storedEmail: ADMIN_EMAIL });
+  log("Password validation", { providedPassword: password?.length || 0, storedPassword: ADMIN_PASSWORD?.length || 0 });
+  
+  const emailMatch = email === ADMIN_EMAIL;
+  const passwordMatch = password === ADMIN_PASSWORD;
+  
+  log("Credentials validation result", { emailMatch, passwordMatch });
+  
+  if (!emailMatch) error("Email mismatch", { expected: ADMIN_EMAIL, received: email });
+  if (!passwordMatch) error("Password mismatch");
+  
+  return emailMatch && passwordMatch;
 }
 
 /**
@@ -29,6 +52,8 @@ export function validateAdminCredentials(
  */
 export function createAdminSession(email: string): string {
   const token = crypto.randomBytes(32).toString("hex");
+  
+  log("Creating admin session", { email, tokenLength: token.length });
 
   activeSessions.set(token, {
     email,
@@ -36,6 +61,7 @@ export function createAdminSession(email: string): string {
     createdAt: Date.now(),
   });
 
+  log("Session created", { sessionsCount: activeSessions.size });
   return token;
 }
 
@@ -43,18 +69,24 @@ export function createAdminSession(email: string): string {
  * Validates admin session token
  */
 export function validateAdminSession(token: string): boolean {
+  log("Validating session token", { token: token?.slice(0, 8) + "..." });
+  
   const session = activeSessions.get(token);
 
   if (!session) {
+    error("Session not found");
     return false;
   }
 
   // Check if session expired
-  if (Date.now() - session.createdAt > SESSION_EXPIRY) {
+  const expiryTime = Date.now() - session.createdAt;
+  if (expiryTime > SESSION_EXPIRY) {
+    log("Session expired", { age: expiryTime });
     activeSessions.delete(token);
     return false;
   }
 
+  log("Session valid", { email: session.email, age: expiryTime });
   return true;
 }
 

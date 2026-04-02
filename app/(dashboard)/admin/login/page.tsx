@@ -39,6 +39,8 @@ export default function AdminLoginPage() {
     setError(null);
 
     try {
+      console.log("[LoginForm] Submitting credentials", { email: formData.email });
+      
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: {
@@ -47,9 +49,16 @@ export default function AdminLoginPage() {
         body: JSON.stringify(formData),
       });
 
+      console.log("[LoginForm] API response status", { status: response.status });
+      
       const data = await response.json();
+      console.log("[LoginForm] API response data", data);
 
       if (!response.ok) {
+        console.error("[LoginForm] Login failed", { 
+          status: response.status,
+          error: data.error 
+        });
         setError({
           message: data.error?.message || "Giriş başarısız",
         });
@@ -57,9 +66,11 @@ export default function AdminLoginPage() {
         return;
       }
 
+      console.log("[LoginForm] Login successful, redirecting to admin dashboard");
       // Success - redirect to admin dashboard
       router.push("/admin");
     } catch (err) {
+      console.error("[LoginForm] Exception during login", err);
       setError({
         message: "Bir hata oluştu. Lütfen tekrar deneyin.",
       });
