@@ -55,6 +55,8 @@ export default function CreateEventPage() {
     setError(null);
 
     try {
+      console.log("[EventForm] Form submission started", formData);
+      
       // Parse data for API
       const payload: CreateEventInput = {
         name: formData.name,
@@ -67,16 +69,21 @@ export default function CreateEventPage() {
         radius: formData.radius ? parseFloat(formData.radius) : 50,
       };
 
+      console.log("[EventForm] Payload prepared", payload);
+
       // Validate
       const validation = createEventSchema.safeParse(payload);
       if (!validation.success) {
         const errors = validation.error.errors
           .map((e) => e.message)
           .join(", ");
+        console.error("[EventForm] Validation failed", validation.error.errors);
         setError(`Doğrulama hatası: ${errors}`);
         setIsLoading(false);
         return;
       }
+
+      console.log("[EventForm] Validation passed, sending to API");
 
       const response = await fetch("/api/events", {
         method: "POST",
@@ -86,15 +93,21 @@ export default function CreateEventPage() {
         body: JSON.stringify(payload),
       });
 
+      console.log("[EventForm] API response status", response.status);
+
       const data = await response.json();
+      console.log("[EventForm] API response data", data);
 
       if (!response.ok) {
+        console.error("[EventForm] API error", data);
         throw new Error(data.error?.message || "Etkinlik oluşturulamadı");
       }
 
+      console.log("[EventForm] Event created successfully", data.data.id);
       router.push(`/admin/events/${data.data.id}`);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Bir hata oluştu";
+      console.error("[EventForm] Error during submission", err);
       setError(message);
     } finally {
       setIsLoading(false);

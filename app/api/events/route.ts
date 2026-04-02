@@ -41,11 +41,14 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("[EventsAPI] POST request received");
     const body = await request.json();
+    console.log("[EventsAPI] Request body", body);
 
     // Validate input
     const validation = createEventSchema.safeParse(body);
     if (!validation.success) {
+      console.error("[EventsAPI] Validation failed", validation.error.errors);
       return NextResponse.json(
         createErrorResponse(
           ERROR_CODES.INVALID_INPUT,
@@ -75,6 +78,8 @@ export async function POST(request: NextRequest) {
     // Create event with initial QR token
     const initialToken = generateQRToken();
     const tokenExpiry = calculateTokenExpiry();
+
+    console.log("[EventsAPI] Creating event", { name, location, latitude, longitude });
 
     const event = await prisma.event.create({
       data: {
@@ -122,7 +127,9 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Create event error:", error);
+    console.error("[EventsAPI] Create event error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Bilinmeyen hata";
+    console.error("[EventsAPI] Error details:", errorMessage);
     return NextResponse.json(
       createErrorResponse(ERROR_CODES.INTERNAL_ERROR, "Etkinlik oluşturulamadı"),
       { status: 500 }
