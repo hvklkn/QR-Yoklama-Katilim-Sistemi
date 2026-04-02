@@ -55,9 +55,18 @@ export function Header() {
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="text-white text-sm md:text-base hover:text-red-400 transition-colors disabled:opacity-50 font-medium"
+                  className="px-3 md:px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-sm md:text-base rounded-lg hover:shadow-lg hover:scale-110 hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 disabled:scale-100 active:scale-95 font-semibold flex items-center gap-1"
                 >
-                  {isLoggingOut ? "Çıkılıyor..." : "Çıkış"}
+                  {isLoggingOut ? (
+                    <>
+                      <span className="inline-block animate-spin">⏳</span>
+                      Çıkılıyor...
+                    </>
+                  ) : (
+                    <>
+                      🚪 Çıkış
+                    </>
+                  )}
                 </button>
               </>
             ) : null}
