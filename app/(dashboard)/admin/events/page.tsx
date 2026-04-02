@@ -69,7 +69,7 @@ export default function EventsPage() {
         </button>
         <button
           onClick={() => router.back()}
-          className="sm:hidden mb-4 px-3 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:shadow-lg hover:scale-110 hover:from-primary-700 hover:to-primary-800 transition-all duration-200 active:scale-95 font-semibold text-lg"
+          className="sm:hidden mb-4 ml-2 px-3 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:shadow-lg hover:scale-110 hover:from-primary-700 hover:to-primary-800 transition-all duration-200 active:scale-95 font-semibold text-lg"
         >
           ←
         </button>
