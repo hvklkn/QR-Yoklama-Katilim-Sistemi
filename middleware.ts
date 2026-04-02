@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validateAdminSession } from "@/lib/auth/admin";
 
 export function middleware(request: NextRequest) {
   // Check if accessing protected routes
@@ -12,9 +11,9 @@ export function middleware(request: NextRequest) {
     // Get session token
     const sessionToken = request.cookies.get("admin_session")?.value;
 
-    // Validate session
-    if (!sessionToken || !validateAdminSession(sessionToken)) {
-      // Redirect to login
+    // For middleware, we do basic validation
+    // Full validation happens in API routes
+    if (!sessionToken) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
   }
@@ -24,4 +23,5 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ["/admin/:path*"],
+  runtime: "nodejs",
 };

@@ -24,6 +24,9 @@ export interface EventDTO {
   createdBy: string;
   createdAt: string;
   updatedAt: string;
+  qrTokens?: QRTokenDTO[];
+  participantCount?: number;
+  attendanceCount?: number;
 }
 
 export interface CreateEventRequest {
