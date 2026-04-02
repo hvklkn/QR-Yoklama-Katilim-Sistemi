@@ -2,7 +2,7 @@ export default function Home() {
   return (
     <>
       {/* Hero Section with Animated Background */}
-      <section className="py-12 md:py-24 relative overflow-hidden bg-gray-800">
+      <section className="w-full py-12 md:py-24 relative overflow-hidden bg-gray-800">
         <div className="absolute inset-0 animated-bg -z-10 opacity-30"></div>
         <div className="container-max text-center mb-8 md:mb-12 relative z-10">
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-6 drop-shadow-lg px-4">
@@ -31,7 +31,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="py-12 md:py-24 bg-gray-50">
+      <section className="w-full py-12 md:py-24 bg-gray-50">
         <div className="container-max">
           <div className="mb-8 md:mb-12 text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Neden Bizi Tercih Etmelisiniz?</h2>
@@ -113,7 +113,7 @@ export default function Home() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 md:py-24 bg-white overflow-x-hidden">
+      <section className="w-full py-12 md:py-24 bg-white overflow-x-hidden">
         <div className="container-max">
           <div className="relative">
             <div className="stats-scroll">
