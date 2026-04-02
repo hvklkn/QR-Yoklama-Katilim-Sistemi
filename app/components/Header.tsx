@@ -1,6 +1,31 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
 
 export function Header() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const isAdminRoute = pathname?.startsWith("/admin");
+  const isLoginPage = pathname?.includes("login");
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+      router.push("/admin/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <header className="bg-white border-b border-gray-200">
       <div className="container-max">
@@ -13,18 +38,32 @@ export function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/admin" className="text-gray-600 hover:text-gray-900">
-              Admin
-            </Link>
-            <Link href="/scan" className="text-gray-600 hover:text-gray-900">
-              Scan
-            </Link>
+            {!isAdminRoute ? (
+              <>
+                <Link href="/admin/login" className="text-gray-600 hover:text-gray-900">
+                  Admin
+                </Link>
+                <Link href="/scan" className="text-gray-600 hover:text-gray-900">
+                  Scan
+                </Link>
+              </>
+            ) : !isLoginPage ? (
+              <>
+                <span className="text-gray-600">Admin Paneli</span>
+                <button
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="text-gray-600 hover:text-danger transition-colors disabled:opacity-50"
+                >
+                  {isLoggingOut ? "Çıkılıyor..." : "Çıkış"}
+                </button>
+              </>
+            ) : null}
           </nav>
 
           <div className="md:hidden">
             <button className="text-gray-600">
               <span className="sr-only">Menu</span>
-              {/* Hamburger icon would go here */}
             </button>
           </div>
         </div>
