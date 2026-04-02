@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.la/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  startTime     DateTime
+  endTime       DateTime
+  location      String
+  latitude      Float?
+  longitude     Float?
+  radius        Float    @default(50) // Meters for geofencing
+  
+  createdBy     String   // Admin ID or email
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  participants  Participant[]
+  qrTokens      QRToken[]
+  attendances   Attendance[]
+
+  @@index([createdBy])
+  @@index([startTime])
+}
+
+model Participant {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  firstName String
+  lastName  String
+  email     String
+  phone     String?
+  
+  // Optional: if participant existed before (pre-registered)
+  isPreRegistered Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  attendances Attendance[]
+
+  @@unique([eventId, email])
+  @@index([eventId])
+}
+
+model QRToken {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  token     String   @unique // Unique token for this QR code
+  expiresAt DateTime // When this token expires
+  
+  isValid   Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([expiresAt])
+}
+
+model Attendance {
+  id            String   @id @default(cuid())
+  eventId       String
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  
+  participantId String
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  
+  qrTokenId     String? // Which QR token was used
+  
+  latitude      Float? // Where they scanned from
+  longitude     Float?
+  accuracyMeter Float?
+  
+  scanTime      DateTime @default(now())
+  status        String   @default("success") // success, invalid_qr, expired_qr, location_failed, unauthorized
+  errorMessage  String?
+
+  @@index([eventId])
+  @@index([participantId])
+  @@index([scanTime])
+}
+
+model WebhookLog {
+  id        String   @id @default(cuid())
+  eventType String   // e.g. "attendance_created", "event_started"
+  payload   Json
+  
+  sentTo    String? // n8n endpoint or similar
+  status    String  @default("pending") // pending, success, failed
+  response  Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventType])
+  @@index([status])
+}
