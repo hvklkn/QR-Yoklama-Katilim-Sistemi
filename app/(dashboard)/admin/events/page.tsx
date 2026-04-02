@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { EventDTO } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 
 export default function EventsPage() {
+  const router = useRouter();
   const [events, setEvents] = useState<EventDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,18 +60,32 @@ export default function EventsPage() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
+      <div className="mb-8 fade-in">
+        <button
+          onClick={() => router.back()}
+          className="hidden sm:flex btn-outline btn-small mb-4 items-center gap-2"
+        >
+          ← Geri Dön
+        </button>
+        <button
+          onClick={() => router.back()}
+          className="sm:hidden mb-4 px-3 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:shadow-lg hover:scale-110 hover:from-primary-700 hover:to-primary-800 transition-all duration-200 active:scale-95 font-semibold text-lg"
+        >
+          ←
+        </button>
+        <div className="space-y-4 mb-2">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
             📅 Etkinlikler
           </h1>
           <p className="text-gray-600 font-medium">
             {isLoading ? "Yükleniyor..." : `${events.length} aktif etkinlik`}
           </p>
         </div>
-        <Link href="/admin/events/new" className="btn-success">
-          ➕ Yeni Etkinlik
-        </Link>
+        <div className="flex justify-center sm:justify-end">
+          <Link href="/admin/events/new" className="btn-success">
+            ➕ Yeni Etkinlik
+          </Link>
+        </div>
       </div>
 
       {error && (

@@ -6,7 +6,8 @@ export const metadata = {
 
 export default function AdminPage() {
   return (
-    <main className="flex-1 container-max py-8">
+    <>
+      <main className="flex-1 container-max py-8">
         {/* Admin Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {/* Events */}
