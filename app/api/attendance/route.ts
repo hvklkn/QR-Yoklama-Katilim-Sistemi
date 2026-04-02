@@ -22,11 +22,22 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!eventId || !participantId || !qrToken) {
+    if (!eventId || !qrToken) {
       return NextResponse.json(
         createErrorResponse(
           ERROR_CODES.INVALID_INPUT,
-          "Etkinlik ID, katılımcı ID ve QR token gerekli"
+          "Etkinlik ID ve QR token gerekli"
+        ),
+        { status: 400 }
+      );
+    }
+
+    // participantId if provided must be valid
+    if (!participantId) {
+      return NextResponse.json(
+        createErrorResponse(
+          ERROR_CODES.INVALID_INPUT,
+          "Katılımcı ID gerekli"
         ),
         { status: 400 }
       );
@@ -201,11 +212,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate location if coordinates are provided
-    let locationValid = true;
-    let locationError: string | undefined;
+    // Validate location - Required if event has location coordinates set
+    if (event.latitude && event.longitude) {
+      // If event has location, location data is required
+      if (!latitude || !longitude) {
+        await recordFailedAttendance(
+          eventId,
+          participantId,
+          qrToken,
+          "location_failed",
+          "Konum bilgisi alınamadı. Lütfen cihazın konum servisini açın ve baştan deneyin.",
+          latitude,
+          longitude,
+          accuracyMeter
+        );
 
-    if (event.latitude && event.longitude && latitude && longitude) {
+        return NextResponse.json(
+          createErrorResponse(
+            ERROR_CODES.LOCATION_UNAVAILABLE,
+            "Konum bilgisi alınamadı. Bu etkinlik için konum doğrulaması gereklidir."
+          ),
+          { status: 400 }
+        );
+      }
+
+      // Verify location is within geofence
       const locationResult = validateLocationGeofence(
         {
           latitude: event.latitude,
@@ -219,8 +250,27 @@ export async function POST(request: NextRequest) {
       );
 
       if (!locationResult.isWithinGeofence) {
-        locationValid = false;
-        locationError = `Konumunuz etkinlikten ${Math.round(locationResult.distance)}m uzağında`;
+        const distance = Math.round(locationResult.distance);
+        const errorMsg = `Konumunuz etkinlikten ${distance}m uzağında. Minimum mesafe: ${event.radius}m`;
+
+        await recordFailedAttendance(
+          eventId,
+          participantId,
+          qrToken,
+          "location_failed",
+          errorMsg,
+          latitude,
+          longitude,
+          accuracyMeter
+        );
+
+        return NextResponse.json(
+          createErrorResponse(
+            ERROR_CODES.LOCATION_OUT_OF_RANGE,
+            errorMsg
+          ),
+          { status: 403 }
+        );
       }
     }
 
@@ -237,15 +287,7 @@ export async function POST(request: NextRequest) {
       // In production, might want to prevent duplicates
     }
 
-    // Record attendance
-    let status: AttendanceStatus = AttendanceStatus.SUCCESS;
-    let errorMessage: string | undefined;
-
-    if (!locationValid) {
-      status = AttendanceStatus.LOCATION_FAILED;
-      errorMessage = locationError;
-    }
-
+    // Record successful attendance
     const attendance = await prisma.attendance.create({
       data: {
         eventId,
@@ -254,26 +296,19 @@ export async function POST(request: NextRequest) {
         latitude,
         longitude,
         accuracyMeter,
-        status,
-        errorMessage,
+        status: AttendanceStatus.SUCCESS,
       },
     });
 
-    // Trigger webhook if successful
-    if (status === AttendanceStatus.SUCCESS) {
-      triggerWebhook(eventId, participantId, attendance.id);
-    }
+    // Trigger webhook for successful attendance
+    triggerWebhook(eventId, participantId, attendance.id);
 
     return NextResponse.json(
       createSuccessResponse({
         attendance,
-        locationValid,
-        message:
-          status === AttendanceStatus.SUCCESS
-            ? "Yoklama başarıyla kaydedildi"
-            : `Yoklama kaydedildi: ${errorMessage}`,
+        message: "Yoklama başarıyla kaydedildi",
       }),
-      { status: status === AttendanceStatus.SUCCESS ? 201 : 202 }
+      { status: 201 }
     );
   } catch (error) {
     console.error("Create attendance error:", error);

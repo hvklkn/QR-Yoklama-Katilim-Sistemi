@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       createSuccessResponse(
-        participants.map((p) => ({
+        participants.map((p: any) => ({
           ...p,
           attendanceCount: p._count.attendances,
           _count: undefined,

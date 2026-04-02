@@ -1,3 +1,4 @@
+import { Header } from "@/app/components/Header";
 import Link from "next/link";
 
 export const metadata = {
@@ -6,16 +7,18 @@ export const metadata = {
 
 export default function AdminPage() {
   return (
-    <>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
-        <p className="text-gray-600">
-          Etkinliklerinizi yönetin, katılımcıları izleyin
-        </p>
-      </div>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1 container-max py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
+          <p className="text-gray-600">
+            Etkinliklerinizi yönetin, katılımcıları izleyin
+          </p>
+        </div>
 
-      {/* Admin Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Admin Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Events */}
         <Link href="/admin/events" className="card p-6 hover:shadow-md transition-shadow cursor-pointer">
           <div className="text-4xl mb-4">📅</div>
@@ -99,6 +102,7 @@ export default function AdminPage() {
           </li>
         </ol>
       </div>
-    </>
+    </main>
+    </div>
   );
 }

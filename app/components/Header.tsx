@@ -27,33 +27,33 @@ export function Header() {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200">
+    <header className="bg-gradient-to-r from-gray-800 to-gray-900 border-b border-gray-700 sticky top-0 z-50 w-full">
       <div className="container-max">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center text-white font-bold">
+        <div className="flex items-center justify-between h-14 md:h-16">
+          <Link href="/" className="flex items-center gap-2 px-2 md:px-3 py-1 md:py-2 border-2 border-white/30 rounded-lg hover:border-primary-400 hover:bg-primary-500/10 hover:scale-110 transition-all duration-200 text-sm md:text-base">
+            <div className="w-6 md:w-8 h-6 md:h-8 bg-white rounded-lg flex items-center justify-center text-primary-600 font-bold hover:scale-125 hover:shadow-lg transition-all duration-200 text-xs md:text-sm">
               QR
             </div>
-            <span className="font-bold text-gray-900">Yoklama</span>
+            <span className="font-bold text-white hidden sm:block">Yoklama</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-4 md:gap-6">
             {!isAdminRoute ? (
               <>
-                <Link href="/admin/login" className="text-gray-600 hover:text-gray-900">
+                <Link href="/admin/login" className="px-3 md:px-4 py-2 border-2 border-white/30 text-white text-sm md:text-base rounded-lg hover:border-primary-400 hover:text-primary-400 hover:bg-primary-500/10 hover:scale-110 transition-all duration-200 font-medium">
                   Admin
                 </Link>
-                <Link href="/scan" className="text-gray-600 hover:text-gray-900">
+                <Link href="/scan" className="px-3 md:px-4 py-2 bg-primary-600 text-white text-sm md:text-base rounded-lg hover:bg-primary-500 hover:scale-110 transition-all duration-200 font-medium shadow-md hover:shadow-lg">
                   Scan
                 </Link>
               </>
             ) : !isLoginPage ? (
               <>
-                <span className="text-gray-600">Admin Paneli</span>
+                <span className="text-white text-sm md:text-base">Admin Paneli</span>
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}
-                  className="text-gray-600 hover:text-danger transition-colors disabled:opacity-50"
+                  className="text-white text-sm md:text-base hover:text-red-400 transition-colors disabled:opacity-50 font-medium"
                 >
                   {isLoggingOut ? "Çıkılıyor..." : "Çıkış"}
                 </button>
