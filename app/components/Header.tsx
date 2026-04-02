@@ -15,12 +15,14 @@ export function Header() {
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
-      await fetch("/api/auth/logout", {
+      console.log("[Header] Logout initiated");
+      const response = await fetch("/api/auth/logout", {
         method: "POST",
       });
+      console.log("[Header] Logout response", { status: response.status });
       router.push("/admin/login");
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error("[Header] Logout error:", error);
     } finally {
       setIsLoggingOut(false);
     }
