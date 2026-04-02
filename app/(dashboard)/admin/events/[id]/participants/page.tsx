@@ -113,47 +113,47 @@ export default function ParticipantsPage() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
         <div>
-          <Link href={`/admin/events/${eventId}`} className="text-primary-600 hover:text-primary-700 mb-2 font-medium">
+          <Link href={`/admin/events/${eventId}`} className="text-primary-600 hover:text-primary-700 hover:scale-110 mb-2 font-medium transition-all duration-200 flex items-center gap-1">
             ← Etkinliğe Dön
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Katılımcıları Yönet
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
+            👥 Katılımcıları Yönet
           </h1>
-          <p className="text-gray-600">
-            {participants.length} katılımcı ({isLoading ? "yükleniyor..." : "toplam"})
+          <p className="text-gray-600 text-lg">
+            <span className="font-bold text-primary-600">{participants.length}</span> katılımcı ({isLoading ? "yükleniyor..." : "toplam"})
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
           <button
             onClick={() => setShowBulkImport(!showBulkImport)}
-            className="btn-secondary"
+            className="btn-warning flex-1 sm:flex-none"
           >
             📥 CSV İçe Aktar
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="btn-primary"
+            className="btn-success flex-1 sm:flex-none"
           >
-            + Katılımcı Ekle
+            ➕ Katılımcı Ekle
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-          {error}
+        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-lg text-red-700 font-medium animate-pulse">
+          ❌ {error}
         </div>
       )}
 
       {/* Add Form */}
       {showForm && (
-        <div className="card p-6 mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">
-            Yeni Katılımcı Ekle
+        <div className="card-elevated p-8 mb-8 bg-gradient-to-br from-green-50 to-white border-l-4 border-green-600 fade-in">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            ➕ Yeni Katılımcı Ekle
           </h2>
-          <form onSubmit={handleAddParticipant} className="space-y-4">
+          <form onSubmit={handleAddParticipant} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <input
                 type="text"
@@ -207,17 +207,17 @@ export default function ParticipantsPage() {
               }
               className="input-base"
             />
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 type="submit"
-                className="btn-primary"
+                className="btn-success flex-1 sm:flex-none"
               >
-                Ekle
+                ✓ Ekle
               </button>
               <button
                 type="button"
                 onClick={() => setShowForm(false)}
-                className="btn-secondary"
+                className="btn-secondary flex-1 sm:flex-none"
               >
                 İptal
               </button>
@@ -239,66 +239,70 @@ export default function ParticipantsPage() {
 
       {/* Participants List */}
       {isLoading ? (
-        <div className="text-center py-12">
-          <p className="text-gray-600">Katılımcılar yükleniyor...</p>
+        <div className="text-center py-16 fade-in">
+          <div className="inline-block">
+            <div className="spinner w-12 h-12 border-4 border-gray-200 border-t-primary-600 rounded-full"></div>
+          </div>
+          <p className="text-gray-600 mt-4 font-medium">Katılımcılar yükleniyor...</p>
         </div>
       ) : participants.length === 0 ? (
-        <div className="text-center py-12 card">
-          <p className="text-gray-600 mb-4">Henüz katılımcı eklenmemiş</p>
-          <button
-            onClick={() => setShowForm(true)}
-            className="btn-primary"
-          >
-            İlk Katılımcıyı Ekle
-          </button>
+        <div className="text-center py-16 card-elevated bg-gradient-to-br from-gray-50 to-white border-2 border-dashed border-gray-300 fade-in">
+          <p className="text-gray-600 mb-6 text-lg font-medium">👥 Henüz katılımcı eklenmemiş</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => setShowForm(true)}
+              className="btn-success"
+            >
+              ➕ İlk Katılımcıyı Ekle
+            </button>
+            <button
+              onClick={() => setShowBulkImport(true)}
+              className="btn-outline"
+            >
+              📥 CSV'den İçe Aktar
+            </button>
+          </div>
         </div>
       ) : (
-        <div className="overflow-x-auto card">
+        <div className="overflow-x-auto card-elevated">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Ad Soyad
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  E-posta
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Telefon
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  Yoklamalar
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                  İşlemler
-                </th>
+              <tr className="border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">👤 Ad Soyad</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">📧 E-posta</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">📱 Telefon</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">✓ Yoklamalar</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">⚙️ İşlemler</th>
               </tr>
             </thead>
             <tbody>
-              {participants.map((p) => (
-                <tr key={p.id} className="border-b border-gray-200 hover:bg-gray-50">
-                  <td className="px-6 py-3">
-                    <div className="font-medium text-gray-900">
+              {participants.map((p, idx) => (
+                <tr 
+                  key={p.id} 
+                  className={`border-b border-gray-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent transition-all duration-300 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                >
+                  <td className="px-6 py-4">
+                    <div className="font-semibold text-gray-900">
                       {p.firstName} {p.lastName}
                     </div>
                   </td>
-                  <td className="px-6 py-3 text-gray-600 text-sm">
+                  <td className="px-6 py-4 text-gray-700 text-sm font-medium">
                     {p.email}
                   </td>
-                  <td className="px-6 py-3 text-gray-600 text-sm">
-                    {p.phone || "-"}
+                  <td className="px-6 py-4 text-gray-700 text-sm">
+                    {p.phone || <span className="text-gray-400">-</span>}
                   </td>
-                  <td className="px-6 py-3">
-                    <span className="inline-block bg-primary-100 text-primary-700 px-2 py-1 rounded text-sm font-medium">
-                      {(p as any).attendanceCount || 0}
+                  <td className="px-6 py-4">
+                    <span className="badge-success">
+                      {(p as any).attendanceCount || 0} ✓
                     </span>
                   </td>
-                  <td className="px-6 py-3">
+                  <td className="px-6 py-4">
                     <button
                       onClick={() => handleDeleteParticipant(p.id)}
-                      className="btn-danger btn-small"
+                      className="btn-danger btn-small hover:animate-pulse"
                     >
-                      Sil
+                      🗑️ Sil
                     </button>
                   </td>
                 </tr>

@@ -139,46 +139,48 @@ export default function EventDetailPage() {
 
   return (
     <>
-      <div className="mb-8">
+      <div className="mb-8 fade-in">
         <button
           onClick={() => router.back()}
-          className="text-primary-600 hover:text-primary-700 mb-4 font-medium"
+          className="text-primary-600 hover:text-primary-700 hover:scale-110 mb-4 font-medium transition-all duration-200 flex items-center gap-1"
         >
           ← Geri
         </button>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{event.name}</h1>
-        <p className="text-gray-600">{event.description}</p>
+        <h1 className="text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">{event.name}</h1>
+        <p className="text-gray-600 text-lg">{event.description}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Event Info */}
         <div className="lg:col-span-2 space-y-6">
           {/* Details Card */}
-          <div className="card p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Etkinlik Detayları</h2>
+          <div className="card-elevated p-6 border-l-4 border-primary-600">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              📋 Etkinlik Detayları
+            </h2>
             <div className="space-y-3 text-sm">
-              <p>
-                <span className="font-medium text-gray-700">Lokasyon:</span>{" "}
-                {event.location}
-              </p>
-              <p>
-                <span className="font-medium text-gray-700">Başlangıç:</span>{" "}
-                {new Date(event.startTime).toLocaleString("tr-TR")}
-              </p>
-              <p>
-                <span className="font-medium text-gray-700">Bitiş:</span>{" "}
-                {new Date(event.endTime).toLocaleString("tr-TR")}
-              </p>
+              <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                <span className="font-medium text-gray-700">📍 Lokasyon:</span>
+                <span className="text-gray-900">{event.location}</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                <span className="font-medium text-gray-700">🕐 Başlangıç:</span>
+                <span className="text-gray-900">{new Date(event.startTime).toLocaleString("tr-TR")}</span>
+              </div>
+              <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
+                <span className="font-medium text-gray-700">⏹️ Bitiş:</span>
+                <span className="text-gray-900">{new Date(event.endTime).toLocaleString("tr-TR")}</span>
+              </div>
               {event.latitude && event.longitude && (
                 <>
-                  <p>
-                    <span className="font-medium text-gray-700">Koordinatlar:</span>{" "}
-                    {event.latitude.toFixed(4)}, {event.longitude.toFixed(4)}
-                  </p>
-                  <p>
-                    <span className="font-medium text-gray-700">Geofence Yarıçapı:</span>{" "}
-                    {event.radius}m
-                  </p>
+                  <div className="flex justify-between items-center p-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <span className="font-medium text-gray-700">🧭 Koordinatlar:</span>
+                    <span className="text-gray-900 font-mono">{event.latitude.toFixed(4)}, {event.longitude.toFixed(4)}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <span className="font-medium text-gray-700">📐 Geofence:</span>
+                    <span className="text-gray-900">{event.radius}m</span>
+                  </div>
                 </>
               )}
             </div>
@@ -186,17 +188,17 @@ export default function EventDetailPage() {
 
           {/* Statistics */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="card p-4 text-center">
-              <p className="text-3xl font-bold text-primary-600">
+            <div className="card-elevated p-6 text-center bg-gradient-to-br from-blue-50 to-blue-100 border-l-4 border-blue-600 hover:shadow-xl transition-all duration-300">
+              <p className="text-4xl font-bold text-blue-600">
                 {(event as any).participantCount || 0}
               </p>
-              <p className="text-gray-600 text-sm">Katılımcı</p>
+              <p className="text-gray-700 text-sm font-medium mt-2">👥 Katılımcı</p>
             </div>
-            <div className="card p-4 text-center">
-              <p className="text-3xl font-bold text-success">
+            <div className="card-elevated p-6 text-center bg-gradient-to-br from-green-50 to-green-100 border-l-4 border-green-600 hover:shadow-xl transition-all duration-300">
+              <p className="text-4xl font-bold text-green-600">
                 {(event as any).attendanceCount || 0}
               </p>
-              <p className="text-gray-600 text-sm">Yoklama</p>
+              <p className="text-gray-700 text-sm font-medium mt-2">✓ Yoklama</p>
             </div>
           </div>
 
@@ -204,53 +206,55 @@ export default function EventDetailPage() {
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href={`/admin/events/${event.id}/participants`}
-              className="btn-secondary"
+              className="btn-primary flex-1 text-center"
             >
-              Katılımcıları Yönet
+              👥 Katılımcıları Yönet
             </a>
             <a
               href={`/admin/events/${event.id}/attendance`}
-              className="btn-secondary"
+              className="btn-outline flex-1 text-center"
             >
-              Yoklama Kayıtları
+              📊 Yoklama Kayıtları
             </a>
           </div>
         </div>
 
         {/* QR Code Display */}
-        <div className="card p-6 sticky top-4 h-fit">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">Aktif QR Kodu</h2>
+        <div className="card-elevated p-8 sticky top-4 h-fit bg-gradient-to-b from-white to-primary-50 border-t-4 border-primary-600">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            🔲 Aktif QR Kodu
+          </h2>
 
           {qrCode && (
-            <div className="text-center mb-4">
+            <div className="text-center mb-6 bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
               <img src={qrCode} alt="Event QR Code" className="w-full mx-auto" />
             </div>
           )}
 
           {currentQRToken && (
-            <div className="text-center mb-4">
-              <p className="text-sm text-gray-600 mb-2">Süresi dolana kadar:</p>
-              <div className="inline-block bg-primary-100 text-primary-700 px-3 py-2 rounded font-bold">
+            <div className="text-center mb-6 bg-white p-4 rounded-lg border-2 border-primary-300">
+              <p className="text-sm text-gray-600 mb-2 font-medium">⏱️ Süresi dolana kadar:</p>
+              <div className="inline-block bg-gradient-to-r from-primary-100 to-primary-200 text-primary-700 px-4 py-3 rounded-lg font-bold text-xl tracking-wider border border-primary-300">
                 {Math.floor(timeUntilExpiry / 60)}:{String(timeUntilExpiry % 60).padStart(2, "0")}
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Otomatik 5 dakika sonra yenilenir
+              <p className="text-xs text-gray-500 mt-3 bg-gray-50 p-2 rounded">
+                🔄 Otomatik 5 dakika sonra yenilenir
               </p>
             </div>
           )}
 
           <button
             onClick={handleManualRefresh}
-            className="w-full btn-secondary mb-2"
+            className="w-full btn-warning mb-3"
           >
             🔄 Şimdi Yenile
           </button>
 
           <button
             onClick={() => router.push(`/admin/events/${event.id}/participants`)}
-            className="w-full btn-primary"
+            className="w-full btn-success"
           >
-            Katılımcı Ekle
+            ➕ Katılımcı Ekle
           </button>
         </div>
       </div>

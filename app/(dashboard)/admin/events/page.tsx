@@ -58,79 +58,90 @@ export default function EventsPage() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Etkinlikler</h1>
-          <p className="text-gray-600">
-            {events.length} etkinlik ({isLoading ? "yükleniyor..." : "toplam"})
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
+            📅 Etkinlikler
+          </h1>
+          <p className="text-gray-600 font-medium">
+            {isLoading ? "Yükleniyor..." : `${events.length} aktif etkinlik`}
           </p>
         </div>
-        <Link href="/admin/events/new" className="btn-primary">
-          + Yeni Etkinlik
+        <Link href="/admin/events/new" className="btn-success">
+          ➕ Yeni Etkinlik
         </Link>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-          {error}
+        <div className="mb-6 p-4 card-elevated border-l-4 border-red-500 bg-gradient-to-r from-red-50 to-white text-red-700 animate-pulse">
+          🚨 {error}
         </div>
       )}
 
       {isLoading ? (
-        <div className="text-center py-12">
-          <p className="text-gray-600">Etkinlikler yükleniyor...</p>
+        <div className="text-center py-16 fade-in">
+          <div className="inline-block">
+            <div className="spinner w-12 h-12 border-4 border-gray-200 border-t-primary-600 rounded-full"></div>
+          </div>
+          <p className="text-gray-600 mt-4 font-medium">Etkinlikler yükleniyor...</p>
         </div>
       ) : events.length === 0 ? (
-        <div className="text-center py-12 card">
-          <p className="text-gray-600 mb-4">Henüz etkinlik oluşturulmamış</p>
-          <Link href="/admin/events/new" className="btn-primary">
-            İlk Etkinliği Oluştur
+        <div className="text-center py-16 card-elevated bg-gradient-to-br from-gray-50 to-white border-2 border-dashed border-gray-300 fade-in">
+          <p className="text-gray-600 mb-6 text-lg font-medium">📭 Henüz etkinlik oluşturulmamış</p>
+          <Link href="/admin/events/new" className="btn-success">
+            ➕ İlk Etkinliği Oluştur
           </Link>
         </div>
       ) : (
-        <div className="grid gap-4">
-          {events.map((event) => (
+        <div className="grid gap-6">
+          {events.map((event, idx) => (
             <Link
               key={event.id}
               href={`/admin/events/${event.id}`}
-              className="card p-6 hover:shadow-md transition-shadow cursor-pointer"
+              className="card-hover card-elevated p-6 border-l-4 border-primary-600 group fade-in"
+              style={{ 
+                animationDelay: `${idx * 50}ms`
+              }}
             >
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">
-                    {event.name}
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                    🔲 {event.name}
                   </h3>
                   {event.description && (
-                    <p className="text-gray-600 text-sm mb-2">{event.description}</p>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{event.description}</p>
                   )}
-                  <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                    <span>📍 {event.location}</span>
-                    <span>
-                      🕐{" "}
-                      {new Date(event.startTime).toLocaleDateString("tr-TR")}
-                    </span>
-                    <span>👥 {(event as any).participantCount || 0} katılımcı</span>
-                    <span>✓ {(event as any).attendanceCount || 0} yoklama</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+                    <div className="badge-info">
+                      📍 {event.location}
+                    </div>
+                    <div className="badge-info">
+                      🕐 {new Date(event.startTime).toLocaleDateString("tr-TR")}
+                    </div>
+                    <div className="badge-success">
+                      👥 {(event as any).participantCount || 0}
+                    </div>
+                    <div className="badge-info">
+                      ✓ {(event as any).attendanceCount || 0}
+                    </div>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-2 text-sm text-gray-500">
-                  <span>
+                <div className="flex flex-col items-start sm:items-end gap-3 pt-2 sm:pt-0">
+                  <div className="px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 rounded-full text-sm font-semibold whitespace-nowrap">
                     {formatDistanceToNow(new Date(event.startTime), {
                       addSuffix: true,
                       locale: tr,
                     })}
-                  </span>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleDelete(event.id);
-                      }}
-                      className="btn-danger btn-small"
-                    >
-                      Sil
-                    </button>
                   </div>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleDelete(event.id);
+                    }}
+                    className="btn-danger btn-small hover:animate-pulse"
+                  >
+                    🗑️ Sil
+                  </button>
                 </div>
               </div>
             </Link>

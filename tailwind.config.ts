@@ -28,6 +28,9 @@ const config: Config = {
         warning: "#f59e0b",
         danger: "#ef4444",
       },
+      scale: {
+        102: "1.02",
+      },
     },
   },
   plugins: [],

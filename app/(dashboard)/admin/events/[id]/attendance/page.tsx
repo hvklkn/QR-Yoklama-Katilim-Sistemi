@@ -137,107 +137,107 @@ export default function AttendancePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-900">Yoklama Kayıtları</h1>
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
+        <div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
+            📊 Yoklama Kayıtları
+          </h1>
+          <p className="text-gray-600 font-medium">Tüm tarama geçmişi ve durumları</p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <button
             onClick={downloadCSV}
-            className="px-4 py-2 bg-success-600 text-white rounded-lg hover:bg-success-700 transition-colors"
+            className="btn-warning flex-1 sm:flex-initial"
           >
             📥 CSV İndir
           </button>
           <Link
             href={`/admin/events/${eventId}`}
-            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+            className="btn-secondary flex-1 sm:flex-initial text-center"
           >
-            ← Geri
+            ← Etkinliğe Dön
           </Link>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <h3 className="text-gray-600 text-sm font-medium mb-2">
-            Toplam Tarama
-          </h3>
-          <p className="text-3xl font-bold text-gray-900">{stats.total}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 fade-in">
+        <div className="card-elevated p-6 border-t-4 border-blue-600 bg-gradient-to-br from-blue-50 to-white">
+          <p className="text-gray-600 text-sm font-medium mb-2">📈 Toplam Tarama</p>
+          <p className="text-4xl font-bold text-blue-600">{stats.total}</p>
         </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <h3 className="text-gray-600 text-sm font-medium mb-2">
-            Başarılı
-          </h3>
-          <p className="text-3xl font-bold text-success-600">{stats.success}</p>
+        <div className="card-elevated p-6 border-t-4 border-green-600 bg-gradient-to-br from-green-50 to-white">
+          <p className="text-gray-600 text-sm font-medium mb-2">✅ Başarılı</p>
+          <p className="text-4xl font-bold text-green-600">{stats.success}</p>
         </div>
-        <div className="bg-white p-4 rounded-lg border border-gray-200">
-          <h3 className="text-gray-600 text-sm font-medium mb-2">
-            Başarısız
-          </h3>
-          <p className="text-3xl font-bold text-danger-600">{stats.failed}</p>
+        <div className="card-elevated p-6 border-t-4 border-red-600 bg-gradient-to-br from-red-50 to-white">
+          <p className="text-gray-600 text-sm font-medium mb-2">❌ Başarısız</p>
+          <p className="text-4xl font-bold text-red-600">{stats.failed}</p>
         </div>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="bg-danger-50 border border-danger-200 text-danger-800 px-4 py-3 rounded-lg">
-          {error}
+        <div className="card-elevated p-4 border-l-4 border-red-500 bg-gradient-to-r from-red-50 to-white text-red-700 animate-pulse fade-in">
+          🚨 {error}
         </div>
       )}
 
       {/* Loading State */}
       {loading && (
-        <div className="bg-white p-8 rounded-lg border border-gray-200 text-center">
-          <p className="text-gray-600">Yoklama kayıtları yükleniyor...</p>
+        <div className="text-center py-16 fade-in">
+          <div className="inline-block">
+            <div className="spinner w-12 h-12 border-4 border-gray-200 border-t-primary-600 rounded-full"></div>
+          </div>
+          <p className="text-gray-600 mt-4 font-medium">Yoklama kayıtları yükleniyor...</p>
         </div>
       )}
 
       {/* Attendances Table */}
       {!loading && attendances.length === 0 && (
-        <div className="bg-white p-8 rounded-lg border border-gray-200 text-center">
-          <p className="text-gray-600">Henüz yoklama kaydı bulunmuyor</p>
+        <div className="card-elevated p-8 bg-gradient-to-br from-gray-50 to-white border-2 border-dashed border-gray-300 text-center fade-in">
+          <p className="text-gray-600 text-lg font-medium">📭 Henüz yoklama kaydı bulunmuyor</p>
         </div>
       )}
 
       {!loading && attendances.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto card-elevated fade-in">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Katılımcı
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  E-posta
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Tarama Tarihi
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Durum
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
-                  Hata
-                </th>
+            <thead>
+              <tr className="border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">👤 Katılımcı</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">📧 E-posta</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">🕐 Tarama Tarihi</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">📍 Durum</th>
+                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">⚠️ Hata</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
-              {attendances.map((attendance) => (
-                <tr key={attendance.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm text-gray-900">
-                    {attendance.participant.firstName}{" "}
-                    {attendance.participant.lastName}
+            <tbody>
+              {attendances.map((attendance, idx) => (
+                <tr 
+                  key={attendance.id} 
+                  className={`border-b border-gray-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent transition-all duration-300 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                >
+                  <td className="px-6 py-4">
+                    <div className="font-semibold text-gray-900">
+                      {attendance.participant.firstName} {attendance.participant.lastName}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-gray-700 text-sm font-medium">
                     {attendance.participant.email}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
+                  <td className="px-6 py-4 text-gray-700 text-sm">
                     {formatDate(attendance.scanTime)}
                   </td>
                   <td className="px-6 py-4">
                     {getStatusBadge(attendance.status)}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {attendance.errorMessage || "-"}
+                  <td className="px-6 py-4 text-gray-600 text-sm">
+                    {attendance.errorMessage ? (
+                      <span className="text-red-600 font-medium">{attendance.errorMessage}</span>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
                   </td>
                 </tr>
               ))}
