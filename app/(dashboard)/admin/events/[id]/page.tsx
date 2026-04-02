@@ -139,15 +139,22 @@ export default function EventDetailPage() {
 
   return (
     <>
-      <div className="mb-8 fade-in">
+      <div className="mb-10 fade-in">
         <button
           onClick={() => router.back()}
-          className="text-primary-600 hover:text-primary-700 hover:scale-110 mb-4 font-medium transition-all duration-200 flex items-center gap-1"
+          className="btn-outline btn-small mb-6 flex items-center gap-2"
         >
-          ← Geri
+          ← Geri Dön
         </button>
-        <h1 className="text-4xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">{event.name}</h1>
-        <p className="text-gray-600 text-lg">{event.description}</p>
+        <div className="space-y-2">
+          <h1 className="text-5xl font-black bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 bg-clip-text text-transparent leading-tight">
+            🔲 {event.name}
+          </h1>
+          {event.description && (
+            <p className="text-gray-600 text-lg font-medium max-w-3xl">{event.description}</p>
+          )}
+        </div>
+      </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
