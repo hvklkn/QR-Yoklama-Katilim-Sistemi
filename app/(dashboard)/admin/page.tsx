@@ -10,15 +10,6 @@ export default function AdminPage() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1 container-max py-8">
-        <div className="mb-8 fade-in">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
-            🎯 Admin Dashboard
-          </h1>
-          <p className="text-gray-600 font-medium">
-            Etkinliklerinizi yönetin, katılımcıları izleyin ve yoklama alın
-          </p>
-        </div>
-
         {/* Admin Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {/* Events */}

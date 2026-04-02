@@ -57,7 +57,7 @@ body {
 }
 
 .card-hover:hover {
-  @apply scale-110 shadow-xl border-primary-300 -translate-y-2;
+  @apply scale-105 shadow-xl border-primary-300 -translate-y-2;
 }
 
 .card-elevated {
