@@ -64,7 +64,7 @@ export function Header() {
                     </>
                   ) : (
                     <>
-                      🚪 Çıkış
+                      ✕ Çıkış
                     </>
                   )}
                 </button>
@@ -72,10 +72,21 @@ export function Header() {
             ) : null}
           </nav>
 
+          {/* Mobile Navigation */}
           <div className="md:hidden">
-            <button className="text-gray-600">
-              <span className="sr-only">Menu</span>
-            </button>
+            {!isAdminRoute ? (
+              <Link href="/admin/login" className="px-2 py-1 text-white text-xs bg-primary-600 rounded hover:bg-primary-700 transition-colors">
+                Admin
+              </Link>
+            ) : !isLoginPage ? (
+              <button
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+                className="px-2 py-1 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-lg hover:shadow-lg hover:from-red-600 hover:to-red-700 transition-all duration-200 disabled:opacity-50 font-semibold flex items-center gap-1 whitespace-nowrap"
+              >
+                {isLoggingOut ? "⏳" : "✕"}
+              </button>
+            ) : null}
           </div>
         </div>
       </div>

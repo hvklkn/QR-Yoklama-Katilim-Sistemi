@@ -1,4 +1,3 @@
-import { Header } from "@/app/components/Header";
 import Link from "next/link";
 
 export const metadata = {
@@ -7,9 +6,7 @@ export const metadata = {
 
 export default function AdminPage() {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
-      <main className="flex-1 container-max py-8">
+    <main className="flex-1 container-max py-8">
         {/* Admin Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {/* Events */}
@@ -156,6 +153,6 @@ export default function AdminPage() {
           </div>
         </div>
       </main>
-    </div>
+    </>
   );
 }
