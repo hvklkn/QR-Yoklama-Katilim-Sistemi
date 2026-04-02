@@ -116,25 +116,25 @@ export default function CreateEventPage() {
 
   return (
     <>
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Yeni Etkinlik</h1>
-        <p className="text-gray-600">
-          Etkinlik bilgilerini doldurup QR kod sistemi oluşturun
-        </p>
+      <div className="mb-8 fade-in">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
+          ➕ Yeni Etkinlik Oluştur
+        </h1>
+        <p className="text-gray-600 font-medium">Etkinlik bilgilerini doldurup QR kod sistemi oluşturun</p>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
-          {error}
+        <div className="mb-6 p-4 card-elevated border-l-4 border-red-500 bg-gradient-to-r from-red-50 to-white text-red-700 animate-pulse fade-in">
+          🚨 {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="card p-8 max-w-2xl">
+      <form onSubmit={handleSubmit} className="card-elevated p-8 max-w-2xl bg-gradient-to-br from-white to-gray-50 fade-in">
         <div className="space-y-6">
           {/* Event Name */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-              Etkinlik Adı *
+            <label htmlFor="name" className="block text-sm font-bold text-gray-900 mb-2">
+              📛 Etkinlik Adı *
             </label>
             <input
               id="name"
@@ -151,8 +151,8 @@ export default function CreateEventPage() {
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
-              Açıklama
+            <label htmlFor="description" className="block text-sm font-bold text-gray-900 mb-2">
+              📝 Açıklama
             </label>
             <textarea
               id="description"
@@ -169,8 +169,8 @@ export default function CreateEventPage() {
           {/* DateTime */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="startTime" className="block text-sm font-medium text-gray-700 mb-2">
-                Başlangıç Tarihi/Saati *
+              <label htmlFor="startTime" className="block text-sm font-bold text-gray-900 mb-2">
+                🕐 Başlangıç Tarihi/Saati *
               </label>
               <input
                 id="startTime"
@@ -184,8 +184,8 @@ export default function CreateEventPage() {
               />
             </div>
             <div>
-              <label htmlFor="endTime" className="block text-sm font-medium text-gray-700 mb-2">
-                Bitiş Tarihi/Saati *
+              <label htmlFor="endTime" className="block text-sm font-bold text-gray-900 mb-2">
+                ⏹️ Bitiş Tarihi/Saati *
               </label>
               <input
                 id="endTime"
@@ -202,8 +202,8 @@ export default function CreateEventPage() {
 
           {/* Location */}
           <div>
-            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-              Lokasyon Adı *
+            <label htmlFor="location" className="block text-sm font-bold text-gray-900 mb-2">
+              📍 Lokasyon Adı *
             </label>
             <input
               id="location"
@@ -219,18 +219,18 @@ export default function CreateEventPage() {
           </div>
 
           {/* Coordinates */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <label className="block text-sm font-medium text-gray-700">
-                GPS Koordinatları (Opsiyonel)
+          <div className="card p-4 border-l-4 border-blue-600 bg-gradient-to-r from-blue-50 to-white">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-bold text-gray-900">
+                🧭 GPS Koordinatları (Opsiyonel)
               </label>
               <button
                 type="button"
                 onClick={handleGetLocation}
-                className="btn-secondary btn-small"
+                className="btn-warning btn-small"
                 disabled={isLoading}
               >
-                📍 Konumu Al
+                📌 Konumu Al
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -255,15 +255,15 @@ export default function CreateEventPage() {
                 disabled={isLoading}
               />
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              GPS koordinatları belirtirseniz tarama sırasında lokasyon doğrulaması yapılacaktır.
+            <p className="text-xs text-gray-600 mt-3 font-medium">
+              💡 GPS koordinatları belirtirseniz tarama sırasında lokasyon doğrulaması yapılacaktır.
             </p>
           </div>
 
           {/* Geofence Radius */}
           <div>
-            <label htmlFor="radius" className="block text-sm font-medium text-gray-700 mb-2">
-              Geofence Yarıçapı (Meter)
+            <label htmlFor="radius" className="block text-sm font-bold text-gray-900 mb-2">
+              📏 Geofence Yarıçapı (Meter)
             </label>
             <input
               id="radius"
@@ -277,19 +277,19 @@ export default function CreateEventPage() {
               className="input-base"
               disabled={isLoading}
             />
-            <p className="text-xs text-gray-500 mt-2">
-              Katılımcılar bu yarıçap içinde olmalı QR kod tarayabilecekler (varsayılan: 50m)
+            <p className="text-xs text-gray-600 mt-2 font-medium">
+              💡 Katılımcılar bu yarıçap içinde olmalı QR kod tarayabilecekler (varsayılan: 50m)
             </p>
           </div>
 
           {/* Submit Buttons */}
-          <div className="flex gap-4 pt-6 border-t border-gray-200">
+          <div className="flex gap-4 pt-6 border-t-2 border-gray-200">
             <button
               type="submit"
               disabled={isLoading}
-              className="btn-primary"
+              className="btn-success"
             >
-              {isLoading ? "Oluşturuluyor..." : "Etkinlik Oluştur"}
+              {isLoading ? "⏳ Oluşturuluyor..." : "✅ Etkinlik Oluştur"}
             </button>
             <button
               type="button"
@@ -297,7 +297,7 @@ export default function CreateEventPage() {
               className="btn-secondary"
               disabled={isLoading}
             >
-              İptal
+              ← İptal
             </button>
           </div>
         </div>
