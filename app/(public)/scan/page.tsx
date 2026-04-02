@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
 import { useRouter } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 interface ScanResponse {
   success: boolean;
   data?: {
@@ -43,9 +45,7 @@ export default function ScannerPage() {
           scanQRCode();
         }
       } catch (_err) {
-        setCameraError(
-          "Kamera açılamadı. Lütfen sayfa iznini kontrol edin."
-        );
+        setCameraError("Kamera açılamadı. Lütfen sayfa iznini kontrol edin.");
         console.error(_err);
       }
     };
@@ -77,12 +77,7 @@ export default function ScannerPage() {
         canvas.height = video.videoHeight;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const imageData = ctx.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
 
         if (code) {
@@ -98,7 +93,6 @@ export default function ScannerPage() {
 
   const handleQRDetected = async (qrData: string) => {
     try {
-      // Parse QR data format: {apiUrl}/scan?token={token}&event={eventId}
       const url = new URL(qrData, window.location.origin);
       const token = url.searchParams.get("token");
       const eventId = url.searchParams.get("event");
@@ -111,7 +105,6 @@ export default function ScannerPage() {
 
       setError(null);
 
-      // Get user location if available
       let latitude: number | undefined;
       let longitude: number | undefined;
       let accuracyMeter: number | undefined;
@@ -124,19 +117,16 @@ export default function ScannerPage() {
             accuracyMeter = position.coords.accuracy;
             submitAttendance(token, eventId, latitude, longitude, accuracyMeter);
           },
-          (err) => {
-            console.warn("Konum alınamadı:", err);
-            // Submit without location
+          (_err) => {
+            console.warn("Konum alınamadı");
             submitAttendance(token, eventId);
           }
         );
       } else {
-        // Browsers don't support geolocation
         submitAttendance(token, eventId);
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : "QR işleme hatası";
-      setError(message);
+      setError(err instanceof Error ? err.message : "QR işleme hatası");
       setScanning(true);
     }
   };
@@ -169,26 +159,20 @@ export default function ScannerPage() {
       const data: ScanResponse = await response.json();
 
       if (data.success) {
-        setSuccess(
-          `✓ Hoş geldiniz, ${data.data?.attendance.participant.firstName}!`
-        );
-        // Auto redirect after 2 seconds
+        setSuccess(`✓ Hoş geldiniz, ${data.data?.attendance.participant.firstName}!`);
         setTimeout(() => {
           setScanning(true);
           setSuccess(null);
         }, 2000);
       } else {
         setError(`Hata: ${data.error?.message || "Tarama başarısız"}`);
-        // Allow retry after 3 seconds
         setTimeout(() => {
           setScanning(true);
           setError(null);
         }, 3000);
       }
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Sunucu hatası";
-      setError(message);
+      setError(err instanceof Error ? err.message : "Sunucu hatası");
       setTimeout(() => {
         setScanning(true);
         setError(null);
@@ -204,7 +188,6 @@ export default function ScannerPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-600 to-primary-800 flex flex-col">
-      {/* Header */}
       <div className="bg-white/10 backdrop-blur-sm border-b border-white/20 p-4">
         <div className="max-w-lg mx-auto flex justify-between items-center">
           <h1 className="text-white text-xl font-bold">🔍 QR Tarama</h1>
@@ -217,13 +200,10 @@ export default function ScannerPage() {
         </div>
       </div>
 
-      {/* Scanner Area */}
       <div className="flex-1 max-w-lg w-full mx-auto px-4 py-8 flex flex-col items-center justify-center">
         {cameraError ? (
           <div className="bg-red-100 border-2 border-red-500 rounded-lg p-6 text-center w-full">
-            <h2 className="text-xl font-bold text-red-700 mb-2">
-              Kamera Hatası
-            </h2>
+            <h2 className="text-xl font-bold text-red-700 mb-2">Kamera Hatası</h2>
             <p className="text-red-600 mb-4">{cameraError}</p>
             <button
               onClick={() => window.location.reload()}
@@ -234,17 +214,13 @@ export default function ScannerPage() {
           </div>
         ) : (
           <>
-            {/* Video Container */}
             <div className="relative w-full aspect-square bg-black rounded-lg overflow-hidden shadow-2xl mb-6">
               <video
                 ref={videoRef}
-                className={`w-full h-full object-cover ${
-                  !scanning ? "opacity-50" : ""
-                }`}
+                className={`w-full h-full object-cover ${!scanning ? "opacity-50" : ""}`}
               />
               <canvas ref={canvasRef} className="hidden" />
 
-              {/* Scan Frame */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div
                   className={`w-2/3 h-2/3 border-2 rounded-lg ${
@@ -264,7 +240,6 @@ export default function ScannerPage() {
                 )}
               </div>
 
-              {/* Status Text */}
               {success && (
                 <div className="absolute inset-0 flex items-center justify-center bg-success-600/80 backdrop-blur-sm">
                   <div className="text-center text-white">
@@ -284,12 +259,9 @@ export default function ScannerPage() {
               )}
             </div>
 
-            {/* Instructions */}
             {scanning && !success && !error && (
               <div className="text-center space-y-3">
-                <p className="text-white text-sm opacity-90">
-                  Etkinliğin QR kodunu kamera içine getirin
-                </p>
+                <p className="text-white text-sm opacity-90">QR kodunu kamera içine getirin</p>
                 <div className="flex justify-center gap-2">
                   <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
                   <div
@@ -304,7 +276,6 @@ export default function ScannerPage() {
               </div>
             )}
 
-            {/* Retry Button */}
             {!scanning && (
               <button
                 onClick={handleRetry}
@@ -317,7 +288,6 @@ export default function ScannerPage() {
         )}
       </div>
 
-      {/* Footer */}
       <div className="bg-white/10 backdrop-blur-sm border-t border-white/20 p-4 text-center text-white text-sm opacity-75">
         <p>Lütfen yeterli ışıkta QR kodu tarayınız</p>
       </div>
