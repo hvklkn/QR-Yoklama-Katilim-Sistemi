@@ -338,24 +338,58 @@ function BulkImportForm({ eventId, onSuccess }: BulkImportFormProps) {
 
     try {
       // Parse CSV
-      const text = await file.text();
-      const lines = text.split("\n");
+      let text = await file.text();
+
+      // UTF-8 BOM temizle (0xFEFF)
+      if (text.charCodeAt(0) === 0xFEFF) {
+        text = text.slice(1);
+      }
+
+      // Satır ayırıcısını normalize et (\r\n veya \r)
+      const lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+
       if (lines.length < 2) {
         throw new Error("CSV dosyası boş veya geçersiz");
       }
 
-      const headers = lines[0].split(",").map((h) => h.trim().toLowerCase());
+      // Header normalization: BOM, boşluk, tırnak, büyük/küçük harf, Türkçe karakter
+      const normalizeHeader = (h: string): string => {
+        return h
+          .replace(/^\uFEFF/, "") // BOM
+          .replace(/^["']|["']$/g, "") // tırnak işaretleri
+          .trim()
+          .toLowerCase()
+          .replace(/ı/g, "i")
+          .replace(/ğ/g, "g")
+          .replace(/ü/g, "u")
+          .replace(/ş/g, "s")
+          .replace(/ö/g, "o")
+          .replace(/ç/g, "c")
+          .replace(/[-_\s]/g, ""); // ayraçları kaldır
+      };
 
-      // Header indeksleri bul - düzeltilmiş logic
+      const rawHeaders = lines[0].split(",");
+      const headers = rawHeaders.map(normalizeHeader);
+
+      // Header indeksleri bul
       const getHeaderIndex = (possibleNames: string[]): number => {
-        const idx = headers.findIndex((h) => possibleNames.includes(h));
+        const normalized = possibleNames.map(normalizeHeader);
+        const idx = headers.findIndex((h) => normalized.includes(h));
         return idx >= 0 ? idx : -1;
       };
 
-      const firstNameIdx = getHeaderIndex(["ad", "firstname", "first_name"]);
-      const lastNameIdx = getHeaderIndex(["soyad", "lastname", "last_name"]);
-      const emailIdx = getHeaderIndex(["eposta", "email", "e-mail", "e_mail"]);
-      const phoneIdx = getHeaderIndex(["telefon", "phone", "tel", "cep"]);
+      const firstNameIdx = getHeaderIndex(["ad", "firstname", "first_name", "isim", "name"]);
+      const lastNameIdx = getHeaderIndex(["soyad", "lastname", "last_name", "surname"]);
+      const emailIdx = getHeaderIndex(["eposta", "email", "e-mail", "e_mail", "mail", "e-posta"]);
+      const phoneIdx = getHeaderIndex(["telefon", "phone", "tel", "cep", "gsm"]);
+
+      // Debug: Hata durumunda header listesini göster
+      if (firstNameIdx === -1 || lastNameIdx === -1 || emailIdx === -1) {
+        const headerList = rawHeaders.map((h) => `"${h.trim()}"`).join(", ");
+        throw new Error(
+          `CSV'de zorunlu sütunlar bulunamadı.\nBulunan başlıklar: ${headerList}\nGerekli başlıklar: Ad, Soyad, E-posta`
+        );
+      }
 
       if (firstNameIdx === -1 || lastNameIdx === -1 || emailIdx === -1) {
         throw new Error("CSV'de zorunlu sütunlar eksik: Ad, Soyad, E-posta");
@@ -368,7 +402,7 @@ function BulkImportForm({ eventId, onSuccess }: BulkImportFormProps) {
       for (let i = 1; i < lines.length; i++) {
         if (!lines[i].trim()) continue;
 
-        const values = lines[i].split(",").map((v) => v.trim());
+        const values = lines[i].split(",").map((v) => v.trim().replace(/^["']|["']$/g, ""));
         
         // Zorunlu alanlar kontrol et
         if (!values[firstNameIdx] || !values[lastNameIdx] || !values[emailIdx]) {
