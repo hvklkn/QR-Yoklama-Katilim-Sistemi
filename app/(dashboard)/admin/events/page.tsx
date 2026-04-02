@@ -62,13 +62,13 @@ export default function EventsPage() {
     <>
       <div className="mb-8 fade-in">
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/admin')}
           className="hidden sm:flex btn-outline btn-small mb-4 items-center gap-2"
         >
           ← Geri Dön
         </button>
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/admin')}
           className="sm:hidden mb-4 ml-2 px-3 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:shadow-lg hover:scale-110 hover:from-primary-700 hover:to-primary-800 transition-all duration-200 active:scale-95 font-semibold text-lg"
         >
           ←

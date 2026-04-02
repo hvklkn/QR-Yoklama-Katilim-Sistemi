@@ -293,7 +293,7 @@ export default function CreateEventPage() {
             </button>
             <button
               type="button"
-              onClick={() => router.back()}
+              onClick={() => router.push('/admin/events')}
               className="btn-secondary"
               disabled={isLoading}
             >

@@ -110,7 +110,7 @@ export default function EventDetailPage() {
       <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
         <p className="text-red-700 mb-4">{error}</p>
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/admin/events')}
           className="btn-secondary"
         >
           Geri Dön
@@ -141,7 +141,7 @@ export default function EventDetailPage() {
     <>
       <div className="mb-10 fade-in">
         <button
-          onClick={() => router.back()}
+          onClick={() => router.push('/admin/events')}
           className="btn-outline btn-small mb-6 flex items-center gap-2"
         >
           ← Geri Dön
