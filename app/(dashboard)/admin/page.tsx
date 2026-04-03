@@ -95,20 +95,21 @@ export default function AdminPage() {
           </Link>
 
           {/* Webhooks */}
-          <div 
-            className="card p-6 border-t-4 border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 opacity-60 cursor-not-allowed"
+          <Link
+            href="/admin/webhooks"
+            className="card-hover card-elevated p-6 border-t-4 border-indigo-600 group bg-gradient-to-br from-white to-indigo-50 fade-in"
             style={{ animationDelay: "250ms" }}
           >
-            <div className="text-5xl mb-4 opacity-50">🔗</div>
-            <h3 className="text-lg font-bold text-gray-600 mb-2">Webhooks</h3>
-            <p className="text-gray-500 text-sm mb-4">
-              n8n ve harici sistemlerle entegrasyon (Yakında)
+            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">🔗</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">Webhooks</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              n8n ve harici sistemlerle entegrasyon
             </p>
-            <div className="text-gray-400 font-semibold flex items-center gap-2">
-              Yakında 
+            <div className="text-indigo-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
+              Webhook Yönet
               <span className="text-xl">→</span>
             </div>
-          </div>
+          </Link>
         </div>
 
         {/* Quick Start Guide */}
