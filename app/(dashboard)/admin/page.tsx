@@ -61,36 +61,38 @@ export default function AdminPage() {
           </Link>
 
           {/* Reports */}
-          <div 
-            className="card p-6 border-t-4 border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 opacity-60 cursor-not-allowed"
+          <Link
+            href="/admin/reports"
+            className="card-hover card-elevated p-6 border-t-4 border-purple-600 group bg-gradient-to-br from-white to-purple-50 fade-in"
             style={{ animationDelay: "150ms" }}
           >
-            <div className="text-5xl mb-4 opacity-50">📊</div>
-            <h3 className="text-lg font-bold text-gray-600 mb-2">Raporlar</h3>
-            <p className="text-gray-500 text-sm mb-4">
-              Detaylı istatistikler ve analizler (Yakında)
+            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">📊</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">Raporlar</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              Etkinlik istatistikleri ve CSV export
             </p>
-            <div className="text-gray-400 font-semibold flex items-center gap-2">
-              Yakında 
+            <div className="text-purple-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
+              Raporlara Git
               <span className="text-xl">→</span>
             </div>
-          </div>
+          </Link>
 
           {/* Settings */}
-          <div 
-            className="card p-6 border-t-4 border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 opacity-60 cursor-not-allowed"
+          <Link
+            href="/admin/settings"
+            className="card-hover card-elevated p-6 border-t-4 border-gray-600 group bg-gradient-to-br from-white to-gray-50 fade-in"
             style={{ animationDelay: "200ms" }}
           >
-            <div className="text-5xl mb-4 opacity-50">⚙️</div>
-            <h3 className="text-lg font-bold text-gray-600 mb-2">Ayarlar</h3>
-            <p className="text-gray-500 text-sm mb-4">
-              Sistem ayarlarını ve entegrasyonları yapılandırın (Yakında)
+            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">⚙️</div>
+            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-gray-700 transition-colors">Ayarlar</h3>
+            <p className="text-gray-600 text-sm mb-4">
+              QR, lokasyon ve hesap yapılandırması
             </p>
-            <div className="text-gray-400 font-semibold flex items-center gap-2">
-              Yakında 
+            <div className="text-gray-700 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
+              Ayarlara Git
               <span className="text-xl">→</span>
             </div>
-          </div>
+          </Link>
 
           {/* Webhooks */}
           <div 
