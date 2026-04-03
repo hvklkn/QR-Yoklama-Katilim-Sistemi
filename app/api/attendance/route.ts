@@ -300,8 +300,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Trigger webhook for successful attendance
-    triggerWebhook(eventId, participantId, attendance.id);
+    // Trigger webhooks for successful attendance (fire-and-forget)
+    triggerWebhooks(event, participant, attendance).catch((err) =>
+      console.error("Webhook trigger error:", err)
+    );
 
     return NextResponse.json(
       createSuccessResponse({
@@ -349,20 +351,78 @@ async function recordFailedAttendance(
   }
 }
 
-function triggerWebhook(eventId: string, participantId: string, attendanceId: string) {
-  // Trigger webhook in background
-  const webhookUrl = process.env.N8N_WEBHOOK_URL;
-  if (!webhookUrl) return;
+async function triggerWebhooks(
+  event: { id: string; name: string },
+  participant: { id: string; firstName: string; lastName: string; email: string },
+  attendance: { id: string; latitude?: number | null; longitude?: number | null; scanTime?: Date | null; status: string }
+) {
+  // DB'den aktif ve attendance_created olayını dinleyen webhook'ları getir
+  const webhooks = await prisma.webhook.findMany({
+    where: {
+      active: true,
+      events: { has: "attendance_created" },
+    },
+  });
 
-  fetch(webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      type: "attendance_created",
-      eventId,
-      participantId,
-      attendanceId,
-      timestamp: new Date().toISOString(),
-    }),
-  }).catch((err) => console.error("Webhook error:", err));
+  if (webhooks.length === 0) return;
+
+  const payload = {
+    attendanceId: attendance.id,
+    eventId: event.id,
+    eventName: event.name,
+    participantId: participant.id,
+    participantName: `${participant.firstName} ${participant.lastName}`,
+    participantEmail: participant.email,
+    scanTime: attendance.scanTime ?? new Date(),
+    status: attendance.status,
+    location:
+      attendance.latitude != null && attendance.longitude != null
+        ? { latitude: attendance.latitude, longitude: attendance.longitude }
+        : null,
+  };
+
+  await Promise.all(
+    webhooks.map(async (wh) => {
+      let status = "success";
+      let responseData: unknown = null;
+
+      // Log kaydı oluştur
+      const log = await prisma.webhookLog.create({
+        data: {
+          webhookId: wh.id,
+          eventType: "attendance_created",
+          payload,
+          sentTo: wh.url,
+          status: "pending",
+        },
+      });
+
+      try {
+        const res = await fetch(wh.url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            event: "attendance_created",
+            timestamp: new Date().toISOString(),
+            data: payload,
+          }),
+          signal: AbortSignal.timeout(10000),
+        });
+        if (!res.ok) status = "failed";
+        try {
+          responseData = await res.json();
+        } catch {
+          responseData = { statusCode: res.status };
+        }
+      } catch (err) {
+        status = "failed";
+        responseData = { error: err instanceof Error ? err.message : "Bağlantı hatası" };
+      }
+
+      await prisma.webhookLog.update({
+        where: { id: log.id },
+        data: { status, response: responseData as object },
+      });
+    })
+  );
 }

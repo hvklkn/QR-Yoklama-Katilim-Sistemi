@@ -32,6 +32,7 @@ export default function WebhooksPage() {
   const [logs, setLogs] = useState<WebhookLog[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [formSaving, setFormSaving] = useState(false);
   const [testResult, setTestResult] = useState<{ id: string; status: string } | null>(null);
   const [testLoading, setTestLoading] = useState<string | null>(null);
 
@@ -42,11 +43,19 @@ export default function WebhooksPage() {
   });
 
   useEffect(() => {
-    // Webhook configs localStorage'da saklanır
-    const stored = localStorage.getItem("qr-webhooks");
-    if (stored) setWebhooks(JSON.parse(stored));
+    fetchWebhooks();
     fetchLogs();
   }, []);
+
+  const fetchWebhooks = async () => {
+    try {
+      const res = await fetch("/api/webhooks/config");
+      const json = await res.json();
+      if (res.ok) setWebhooks(json.data || []);
+    } catch {
+      // sessizce devam
+    }
+  };
 
   const fetchLogs = async () => {
     try {
@@ -61,38 +70,44 @@ export default function WebhooksPage() {
     }
   };
 
-  const saveWebhooks = (updated: WebhookConfig[]) => {
-    setWebhooks(updated);
-    localStorage.setItem("qr-webhooks", JSON.stringify(updated));
-  };
-
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!form.name.trim() || !form.url.trim() || form.events.length === 0) return;
+    setFormSaving(true);
     try {
-      new URL(form.url);
+      const res = await fetch("/api/webhooks/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: form.name, url: form.url, events: form.events }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        alert(json.error?.message || "Webhook eklenemedi");
+        return;
+      }
+      setWebhooks((prev) => [json.data, ...prev]);
+      setForm({ name: "", url: "", events: [] });
+      setShowForm(false);
     } catch {
-      alert("Geçerli bir URL girin (https://...)");
-      return;
+      alert("Webhook eklenemedi");
+    } finally {
+      setFormSaving(false);
     }
-    const newWebhook: WebhookConfig = {
-      id: Date.now().toString(),
-      name: form.name.trim(),
-      url: form.url.trim(),
-      events: form.events,
-      active: true,
-    };
-    saveWebhooks([...webhooks, newWebhook]);
-    setForm({ name: "", url: "", events: [] });
-    setShowForm(false);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!confirm("Bu webhook'u silmek istiyor musunuz?")) return;
-    saveWebhooks(webhooks.filter((w) => w.id !== id));
+    const res = await fetch(`/api/webhooks/config/${id}`, { method: "DELETE" });
+    if (res.ok) setWebhooks((prev) => prev.filter((w) => w.id !== id));
   };
 
-  const handleToggle = (id: string) => {
-    saveWebhooks(webhooks.map((w) => w.id === id ? { ...w, active: !w.active } : w));
+  const handleToggle = async (webhook: WebhookConfig) => {
+    const res = await fetch(`/api/webhooks/config/${webhook.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active: !webhook.active }),
+    });
+    const json = await res.json();
+    if (res.ok) setWebhooks((prev) => prev.map((w) => w.id === webhook.id ? json.data : w));
   };
 
   const handleTest = async (webhook: WebhookConfig) => {
@@ -233,8 +248,8 @@ export default function WebhooksPage() {
               </div>
             </div>
             <div className="flex gap-3 pt-2">
-              <button onClick={handleAdd} className="btn-primary">
-                ✓ Kaydet
+              <button onClick={handleAdd} disabled={formSaving} className="btn-primary">
+                {formSaving ? "⏳ Kaydediliyor..." : "✓ Kaydet"}
               </button>
               <button onClick={() => setShowForm(false)} className="btn-secondary">
                 İptal
@@ -286,7 +301,7 @@ export default function WebhooksPage() {
                   <div className="flex items-center gap-2 shrink-0">
                     {/* Toggle */}
                     <button
-                      onClick={() => handleToggle(webhook.id)}
+                      onClick={() => handleToggle(webhook)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${webhook.active ? "bg-green-500" : "bg-gray-300"}`}
                       title={webhook.active ? "Devre dışı bırak" : "Aktif et"}
                     >
