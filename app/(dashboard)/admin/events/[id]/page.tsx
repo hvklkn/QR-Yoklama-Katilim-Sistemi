@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import QRCode from "qrcode";
 import { EventDTO } from "@/types";
@@ -14,42 +14,36 @@ export default function EventDetailPage() {
   const [qrCode, setQrCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [_refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
   const [countdown, setCountdown] = useState<number>(0);
+  const expiresAtRef = useRef<number>(0);
 
   useEffect(() => {
     fetchEvent();
   }, [eventId]);
 
   useEffect(() => {
-    // Refresh QR token every 5 minutes (as per env config)
+    // Refresh QR token every 5 minutes
     const interval = setInterval(() => {
       refreshQRToken();
     }, 5 * 60 * 1000);
 
-    setRefreshInterval(interval);
     return () => clearInterval(interval);
   }, [eventId]);
 
-  // Countdown timer - updates every second
+  // Countdown timer - runs every second independently
   useEffect(() => {
-    const currentQRToken = event?.qrTokens?.[0];
-    if (!currentQRToken) return;
+    const timer = setInterval(() => {
+      if (expiresAtRef.current > 0) {
+        const remaining = Math.max(
+          0,
+          Math.floor((expiresAtRef.current - Date.now()) / 1000)
+        );
+        setCountdown(remaining);
+      }
+    }, 1000);
 
-    const updateCountdown = () => {
-      const remaining = Math.max(
-        0,
-        Math.floor(
-          (new Date(currentQRToken.expiresAt).getTime() - Date.now()) / 1000
-        )
-      );
-      setCountdown(remaining);
-    };
-
-    updateCountdown();
-    const timer = setInterval(updateCountdown, 1000);
     return () => clearInterval(timer);
-  }, [event]);
+  }, []);
 
   const fetchEvent = async () => {
     try {
@@ -63,6 +57,11 @@ export default function EventDetailPage() {
 
       setEvent(data.data);
       generateQRCode(data.data.qrTokens[0]?.token);
+      // Set expiry for countdown
+      if (data.data.qrTokens?.[0]?.expiresAt) {
+        expiresAtRef.current = new Date(data.data.qrTokens[0].expiresAt).getTime();
+        setCountdown(Math.max(0, Math.floor((expiresAtRef.current - Date.now()) / 1000)));
+      }
       setError(null);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Bir hata oluştu";
@@ -102,6 +101,12 @@ export default function EventDetailPage() {
       // Generate new QR
       generateQRCode(data.data.qrToken.token);
       
+      // Update expiry for countdown
+      if (data.data.qrToken?.expiresAt) {
+        expiresAtRef.current = new Date(data.data.qrToken.expiresAt).getTime();
+        setCountdown(Math.max(0, Math.floor((expiresAtRef.current - Date.now()) / 1000)));
+      }
+
       // Update event data
       if (event) {
         setEvent({
