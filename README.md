@@ -230,6 +230,9 @@ Environment variables'ları Vercel dashboard'dan ayarlayın.
 - `QR_TOKEN_EXPIRY_MINUTES`: QR token geçerlilik süresi
 - `N8N_WEBHOOK_URL`: n8n webhook endpoint
 
+## 📝 Lisans
+
+MIT
 
 ## 👤 Geliştirici
 
@@ -237,6 +240,6 @@ Veli Kalkan (@hvklkn)
 
 ---
 
-**Sürüm**: 0.1.0 (Yapı Aşaması)
+**Sürüm**: 0.1.0 (Alfa - Yapı Aşaması)
 
-**Son Güncelleme**: 6 Nisan 2026
+**Son Güncelleme**: 2 Nisan 2026
