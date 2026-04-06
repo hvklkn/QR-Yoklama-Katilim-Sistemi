@@ -374,12 +374,12 @@ export default function ParticipantsPage() {
                     </button>
                   </td>
                 </tr>
-                );
-              })}
+              ))}
             </tbody>
           </table>
         </div>
       )}
+    </div>
     </>
   );
 }
