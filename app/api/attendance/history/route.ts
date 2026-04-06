@@ -130,6 +130,67 @@ function getStatusLabel(status: string): string {
     expired_qr: "QR Süresi Dolmuş",
     location_failed: "Konum Başarısız",
     unauthorized: "Yetkisiz",
+    manual_present: "Manuel Var",
   };
   return labels[status] || status;
+}
+
+// PATCH: Manuel Var/Yok işaretleme (Admin)
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { eventId, participantId, present } = body;
+
+    if (!eventId || !participantId || typeof present !== "boolean") {
+      return NextResponse.json(
+        createErrorResponse(ERROR_CODES.INVALID_INPUT, "eventId, participantId ve present alanları gerekli"),
+        { status: 400 }
+      );
+    }
+
+    if (present) {
+      // Başarılı yoklama kaydı var mı kontrol et
+      const existing = await prisma.attendance.findFirst({
+        where: {
+          eventId,
+          participantId,
+          status: { in: ["success", "manual_present"] },
+        },
+      });
+
+      if (existing) {
+        return NextResponse.json(
+          createSuccessResponse({ alreadyPresent: true, message: "Katılımcı zaten var işaretli" })
+        );
+      }
+
+      // Manuel yoklama kaydı oluştur
+      const attendance = await prisma.attendance.create({
+        data: {
+          eventId,
+          participantId,
+          status: "manual_present",
+        },
+      });
+
+      return NextResponse.json(createSuccessResponse({ attendance }), { status: 201 });
+    } else {
+      // Manuel veya başarılı yoklama kaydını sil
+      await prisma.attendance.deleteMany({
+        where: {
+          eventId,
+          participantId,
+          status: { in: ["manual_present", "success"] },
+        },
+      });
+
+      return NextResponse.json(createSuccessResponse({ message: "Yoklama kaydı silindi" }));
+    }
+  } catch (error) {
+    console.error("Manual attendance toggle error:", error);
+    return NextResponse.json(
+      createErrorResponse(ERROR_CODES.INTERNAL_ERROR, "İşlem gerçekleştirilemedi"),
+      { status: 500 }
+    );
+  }
 }

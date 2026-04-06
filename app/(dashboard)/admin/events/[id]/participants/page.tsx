@@ -13,6 +13,9 @@ export default function ParticipantsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  // participantId -> { isPresent, attendanceStatus }
+  const [attendanceMap, setAttendanceMap] = useState<Record<string, { isPresent: boolean; status: string }>>({});
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [showBulkImport, setShowBulkImport] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -24,7 +27,51 @@ export default function ParticipantsPage() {
 
   useEffect(() => {
     fetchParticipants();
+    fetchAttendanceStatus();
   }, [eventId]);
+
+  const fetchAttendanceStatus = async () => {
+    try {
+      const response = await fetch(`/api/attendance/history?eventId=${eventId}`);
+      const data = await response.json();
+      if (data.success && data.data) {
+        const map: Record<string, { isPresent: boolean; status: string }> = {};
+        for (const a of data.data.attendances) {
+          if (["success", "manual_present"].includes(a.status)) {
+            map[a.participantId] = { isPresent: true, status: a.status };
+          } else if (!map[a.participantId]) {
+            map[a.participantId] = { isPresent: false, status: a.status };
+          }
+        }
+        setAttendanceMap(map);
+      }
+    } catch (err) {
+      console.error("Yoklama durumu alınamadı:", err);
+    }
+  };
+
+  const handleToggleAttendance = async (participantId: string) => {
+    const current = attendanceMap[participantId];
+    const isPresent = current?.isPresent ?? false;
+    setTogglingId(participantId);
+    try {
+      const response = await fetch("/api/attendance/history", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventId, participantId, present: !isPresent }),
+      });
+      if (response.ok) {
+        setAttendanceMap((prev) => ({
+          ...prev,
+          [participantId]: { isPresent: !isPresent, status: !isPresent ? "manual_present" : "" },
+        }));
+      }
+    } catch (err) {
+      console.error("Toggle hatası:", err);
+    } finally {
+      setTogglingId(null);
+    }
+  };
 
   const fetchParticipants = async () => {
     try {
@@ -271,12 +318,16 @@ export default function ParticipantsPage() {
                 <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">👤 Ad Soyad</th>
                 <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">📧 E-posta</th>
                 <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">📱 Telefon</th>
-                <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">✓ Yoklamalar</th>
+                <th className="px-6 py-4 text-center text-sm font-bold text-gray-900">✓ Var/Yok</th>
                 <th className="px-6 py-4 text-left text-sm font-bold text-gray-900">⚙️ İşlemler</th>
               </tr>
             </thead>
             <tbody>
-              {participants.map((p, idx) => (
+              {participants.map((p, idx) => {
+                const att = attendanceMap[p.id];
+                const isPresent = att?.isPresent ?? false;
+                const isScanned = att?.status === "success";
+                return (
                 <tr 
                   key={p.id} 
                   className={`border-b border-gray-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent transition-all duration-300 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
@@ -292,10 +343,26 @@ export default function ParticipantsPage() {
                   <td className="px-6 py-4 text-gray-700 text-sm">
                     {p.phone || <span className="text-gray-400">-</span>}
                   </td>
-                  <td className="px-6 py-4">
-                    <span className="badge-success">
-                      {(p as any).attendanceCount || 0} ✓
-                    </span>
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <button
+                        onClick={() => handleToggleAttendance(p.id)}
+                        disabled={togglingId === p.id}
+                        title={isScanned ? "QR ile katıldı" : isPresent ? "Yok olarak işaretle" : "Var olarak işaretle"}
+                        className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
+                          isPresent ? "bg-green-500" : "bg-gray-300"
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform ${
+                            isPresent ? "translate-x-8" : "translate-x-1"
+                          }`}
+                        />
+                      </button>
+                      <span className={`text-xs font-semibold ${isPresent ? "text-green-700" : "text-gray-500"}`}>
+                        {togglingId === p.id ? "..." : isPresent ? (isScanned ? "📷 Tarandı" : "✓ Var") : "✗ Yok"}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <button
@@ -306,7 +373,8 @@ export default function ParticipantsPage() {
                     </button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
