@@ -329,10 +329,10 @@ export default function ParticipantsPage() {
                 const isPresent = att?.isPresent ?? false;
                 const isScanned = att?.status === "success";
                 return (
-                <tr 
-                  key={p.id} 
-                  className={`border-b border-gray-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent transition-all duration-300 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
-                >
+                  <tr 
+                    key={p.id} 
+                    className={`border-b border-gray-200 hover:bg-gradient-to-r hover:from-blue-50 hover:to-transparent transition-all duration-300 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                  >
                   <td className="px-6 py-4">
                     <div className="font-semibold text-gray-900">
                       {p.firstName} {p.lastName}
@@ -374,7 +374,8 @@ export default function ParticipantsPage() {
                     </button>
                   </td>
                 </tr>
-              ))}
+                );
+              })}
             </tbody>
           </table>
         </div>
