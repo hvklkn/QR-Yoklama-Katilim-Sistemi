@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createEventSchema, CreateEventInput } from "@/lib/validators";
 
 export default function CreateEventPage() {
@@ -116,11 +117,17 @@ export default function CreateEventPage() {
 
   return (
     <>
-      <div className="mb-8 fade-in">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
-          ➕ Yeni Etkinlik Oluştur
-        </h1>
-        <p className="text-gray-600 font-medium">Etkinlik bilgilerini doldurup QR kod sistemi oluşturun</p>
+    <div className="container-max py-8 space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
+        <div>
+          <Link href="/admin/events" className="text-primary-600 hover:text-primary-700 mb-2 font-medium transition-all duration-200 flex items-center gap-1">
+            ← Etkinliklere Dön
+          </Link>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
+            ➕ Yeni Etkinlik Oluştur
+          </h1>
+          <p className="text-gray-600 font-medium">Etkinlik bilgilerini doldurup QR kod sistemi oluşturun</p>
+        </div>
       </div>
 
       {error && (
@@ -302,6 +309,7 @@ export default function CreateEventPage() {
           </div>
         </div>
       </form>
+    </div>
     </>
   );
 }
