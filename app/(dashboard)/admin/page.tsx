@@ -26,40 +26,6 @@ export default function AdminPage() {
             </div>
           </Link>
 
-          {/* Participants */}
-          <Link 
-            href="/admin/participants" 
-            className="card-hover card-elevated p-6 border-t-4 border-green-600 group bg-gradient-to-br from-white to-green-50 fade-in"
-            style={{ animationDelay: "50ms" }}
-          >
-            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">👥</div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">Katılımcılar</h3>
-            <p className="text-gray-600 text-sm mb-4">
-              Katılımcıları kaydedin, listeleyin ve export edin
-            </p>
-            <div className="text-green-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
-              Katılımcılara Git 
-              <span className="text-xl">→</span>
-            </div>
-          </Link>
-
-          {/* Attendance Records */}
-          <Link 
-            href="/admin/attendance" 
-            className="card-hover card-elevated p-6 border-t-4 border-blue-600 group bg-gradient-to-br from-white to-blue-50 fade-in"
-            style={{ animationDelay: "100ms" }}
-          >
-            <div className="text-5xl mb-4 group-hover:scale-110 transition-transform duration-300">✓</div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">Yoklama Kayıtları</h3>
-            <p className="text-gray-600 text-sm mb-4">
-              Tarama kayıtlarını görüntüleyin ve raporlar oluşturun
-            </p>
-            <div className="text-blue-600 font-semibold flex items-center gap-2 group-hover:gap-3 transition-all">
-              Kayıtlara Git 
-              <span className="text-xl">→</span>
-            </div>
-          </Link>
-
           {/* Reports */}
           <Link
             href="/admin/reports"
