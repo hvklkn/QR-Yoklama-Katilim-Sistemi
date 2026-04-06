@@ -15,6 +15,7 @@ export default function EventDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [_refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout | null>(null);
+  const [countdown, setCountdown] = useState<number>(0);
 
   useEffect(() => {
     fetchEvent();
@@ -29,6 +30,26 @@ export default function EventDetailPage() {
     setRefreshInterval(interval);
     return () => clearInterval(interval);
   }, [eventId]);
+
+  // Countdown timer - updates every second
+  useEffect(() => {
+    const currentQRToken = event?.qrTokens?.[0];
+    if (!currentQRToken) return;
+
+    const updateCountdown = () => {
+      const remaining = Math.max(
+        0,
+        Math.floor(
+          (new Date(currentQRToken.expiresAt).getTime() - Date.now()) / 1000
+        )
+      );
+      setCountdown(remaining);
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, [event]);
 
   const fetchEvent = async () => {
     try {
@@ -128,14 +149,6 @@ export default function EventDetailPage() {
   }
 
   const currentQRToken = event.qrTokens?.[0];
-  const timeUntilExpiry = currentQRToken
-    ? Math.max(
-        0,
-        Math.floor(
-          (new Date(currentQRToken.expiresAt).getTime() - Date.now()) / 1000
-        )
-      )
-    : 0;
 
   return (
     <>
@@ -241,7 +254,7 @@ export default function EventDetailPage() {
             <div className="text-center mb-6 bg-white p-4 rounded-lg border-2 border-primary-300">
               <p className="text-sm text-gray-600 mb-2 font-medium">⏱️ Süresi dolana kadar:</p>
               <div className="inline-block bg-gradient-to-r from-primary-100 to-primary-200 text-primary-700 px-4 py-3 rounded-lg font-bold text-xl tracking-wider border border-primary-300">
-                {Math.floor(timeUntilExpiry / 60)}:{String(timeUntilExpiry % 60).padStart(2, "0")}
+                {Math.floor(countdown / 60)}:{String(countdown % 60).padStart(2, "0")}
               </div>
               <p className="text-xs text-gray-500 mt-3 bg-gray-50 p-2 rounded">
                 🔄 Otomatik 5 dakika sonra yenilenir
