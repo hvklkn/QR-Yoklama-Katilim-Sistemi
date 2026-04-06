@@ -60,32 +60,22 @@ export default function EventsPage() {
 
   return (
     <>
-      <div className="mb-8 fade-in">
-        <button
-          onClick={() => router.push('/admin')}
-          className="hidden sm:flex btn-outline btn-small mb-4 items-center gap-2"
-        >
-          ← Geri Dön
-        </button>
-        <button
-          onClick={() => router.push('/admin')}
-          className="sm:hidden mb-4 ml-2 px-3 py-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:shadow-lg hover:scale-110 hover:from-primary-700 hover:to-primary-800 transition-all duration-200 active:scale-95 font-semibold text-lg"
-        >
-          ←
-        </button>
-        <div className="space-y-4 mb-2">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
+    <div className="container-max py-8 space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
+        <div>
+          <Link href="/admin" className="text-primary-600 hover:text-primary-700 mb-2 font-medium transition-all duration-200 flex items-center gap-1">
+            ← Admin Paneline Dön
+          </Link>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
             📅 Etkinlikler
           </h1>
           <p className="text-gray-600 font-medium">
             {isLoading ? "Yükleniyor..." : `${events.length} aktif etkinlik`}
           </p>
         </div>
-        <div className="flex justify-center sm:justify-end">
-          <Link href="/admin/events/new" className="btn-success">
-            ➕ Yeni Etkinlik
-          </Link>
-        </div>
+        <Link href="/admin/events/new" className="btn-success">
+          ➕ Yeni Etkinlik
+        </Link>
       </div>
 
       {error && (
@@ -164,6 +154,7 @@ export default function EventsPage() {
           ))}
         </div>
       )}
+    </div>
     </>
   );
 }

@@ -99,19 +99,20 @@ export default function ReportsPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-8 fade-in">
+    <div className="container-max py-8 space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
         <div>
-          <Link href="/admin" className="text-primary-600 hover:text-primary-700 text-sm font-medium mb-2 flex items-center gap-1 transition-colors">
-            ← Admin Paneli
+          <Link href="/admin" className="text-primary-600 hover:text-primary-700 mb-2 font-medium transition-all duration-200 flex items-center gap-1">
+            ← Admin Paneline Dön
           </Link>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent mb-1">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent mb-2">
             📊 Raporlar
           </h1>
-          <p className="text-gray-600">Tüm etkinliklerin istatistik ve analizleri</p>
+          <p className="text-gray-600 font-medium">Tüm etkinliklerin istatistik ve analizleri</p>
         </div>
         {data && data.events.length > 0 && (
-          <button onClick={downloadAllCSV} className="btn-success flex items-center gap-2">
-            ⬇️ Tümünü CSV İndir
+          <button onClick={downloadAllCSV} className="btn-success">
+            📥 CSV İndir
           </button>
         )}
       </div>
@@ -225,6 +226,7 @@ export default function ReportsPage() {
           )}
         </>
       ) : null}
+    </div>
     </>
   );
 }
