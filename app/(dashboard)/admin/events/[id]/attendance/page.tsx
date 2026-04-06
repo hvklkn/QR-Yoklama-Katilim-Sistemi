@@ -154,12 +154,6 @@ export default function AttendancePage() {
           >
             📥 CSV İndir
           </button>
-          <Link
-            href={`/admin/events/${eventId}`}
-            className="btn-secondary flex-1 sm:flex-initial text-center"
-          >
-            ← Etkinliğe Dön
-          </Link>
         </div>
       </div>
 

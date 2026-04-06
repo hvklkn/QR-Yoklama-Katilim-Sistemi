@@ -576,6 +576,5 @@ function BulkImportForm({ eventId, onSuccess }: BulkImportFormProps) {
         )}
       </div>
     </div>
-    </>
   );
 }
