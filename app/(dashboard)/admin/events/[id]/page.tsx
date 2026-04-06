@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import QRCode from "qrcode";
 import { EventDTO } from "@/types";
 
@@ -73,7 +74,7 @@ export default function EventDetailPage() {
 
   const generateQRCode = async (token: string) => {
     try {
-      const qrUrl = `${process.env.NEXT_PUBLIC_API_URL}/scan?token=${token}&event=${eventId}`;
+      const qrUrl = `${window.location.origin}/scan?token=${token}&event=${eventId}`;
       const dataUrl = await QRCode.toDataURL(qrUrl, {
         width: 300,
         color: {
@@ -157,19 +158,17 @@ export default function EventDetailPage() {
 
   return (
     <>
-      <div className="mb-10 fade-in">
-        <button
-          onClick={() => router.push('/admin/events')}
-          className="btn-outline btn-small mb-6 flex items-center gap-2"
-        >
-          ← Geri Dön
-        </button>
-        <div className="space-y-2">
-          <h1 className="text-5xl font-black bg-gradient-to-r from-primary-600 via-primary-700 to-primary-800 bg-clip-text text-transparent leading-tight">
+    <div className="container-max py-8 space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
+        <div>
+          <Link href="/admin/events" className="text-primary-600 hover:text-primary-700 mb-2 font-medium transition-all duration-200 flex items-center gap-1">
+            ← Admin Paneline Dön
+          </Link>
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
             🔲 {event.name}
           </h1>
           {event.description && (
-            <p className="text-gray-600 text-lg font-medium max-w-3xl">{event.description}</p>
+            <p className="text-gray-600 font-medium max-w-3xl">{event.description}</p>
           )}
         </div>
       </div>
@@ -282,6 +281,7 @@ export default function EventDetailPage() {
           </button>
         </div>
       </div>
+    </div>
     </>
   );
 }
