@@ -236,7 +236,7 @@ MIT
 
 ## 👤 Geliştirici
 
-Hale Verikal (@hvklkn)
+Veli Kalkan (@hvklkn)
 
 ---
 
