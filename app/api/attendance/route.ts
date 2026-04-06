@@ -298,6 +298,14 @@ export async function POST(request: NextRequest) {
         accuracyMeter,
         status: AttendanceStatus.SUCCESS,
       },
+      include: {
+        participant: {
+          select: {
+            firstName: true,
+            lastName: true,
+          },
+        },
+      },
     });
 
     // Trigger webhooks for successful attendance (fire-and-forget)
