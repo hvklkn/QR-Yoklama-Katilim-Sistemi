@@ -136,18 +136,21 @@ export default function AttendancePage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="container-max py-8 space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
         <div>
+          <Link href={`/admin/events/${eventId}`} className="text-primary-600 hover:text-primary-700 mb-2 font-medium transition-all duration-200 flex items-center gap-1">
+            ← Etkinliğe Dön
+          </Link>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
             📊 Yoklama Kayıtları
           </h1>
           <p className="text-gray-600 font-medium">Tüm tarama geçmişi ve durumları</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2">
           <button
             onClick={downloadCSV}
-            className="btn-warning flex-1 sm:flex-initial"
+            className="btn-warning"
           >
             📥 CSV İndir
           </button>
@@ -245,6 +248,7 @@ export default function AttendancePage() {
           </table>
         </div>
       )}
+    </div>
     </div>
   );
 }

@@ -160,28 +160,29 @@ export default function ParticipantsPage() {
 
   return (
     <>
+    <div className="container-max py-8 space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 fade-in">
         <div>
-          <Link href={`/admin/events/${eventId}`} className="text-primary-600 hover:text-primary-700 hover:scale-110 mb-2 font-medium transition-all duration-200 flex items-center gap-1">
+          <Link href={`/admin/events/${eventId}`} className="text-primary-600 hover:text-primary-700 mb-2 font-medium transition-all duration-200 flex items-center gap-1">
             ← Etkinliğe Dön
           </Link>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent mb-2">
             👥 Katılımcıları Yönet
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-600 font-medium">
             <span className="font-bold text-primary-600">{participants.length}</span> katılımcı ({isLoading ? "yükleniyor..." : "toplam"})
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={() => setShowBulkImport(!showBulkImport)}
-            className="btn-warning flex-1 sm:flex-none"
+            className="btn-warning"
           >
             📥 CSV İçe Aktar
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="btn-success flex-1 sm:flex-none"
+            className="btn-success"
           >
             ➕ Katılımcı Ekle
           </button>
@@ -574,5 +575,7 @@ function BulkImportForm({ eventId, onSuccess }: BulkImportFormProps) {
         )}
       </div>
     </div>
+    </div>
+    </>
   );
 }
