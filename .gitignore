@@ -46,3 +46,4 @@ prisma/seed.ts
 # Database
 *.db
 *.sqlite
+.env.production
