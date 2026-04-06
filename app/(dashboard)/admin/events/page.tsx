@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { EventDTO } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import { tr } from "date-fns/locale";
 
 export default function EventsPage() {
-  const router = useRouter();
   const [events, setEvents] = useState<EventDTO[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
