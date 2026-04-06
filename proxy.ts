@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
   // Pass pathname as custom header for layout use
@@ -39,5 +39,4 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ["/admin/:path*"],
-  runtime: "nodejs",
 };
