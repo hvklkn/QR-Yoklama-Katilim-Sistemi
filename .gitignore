@@ -39,10 +39,10 @@ yarn-error.log*
 # OS
 .DS_Store
 
-# AI/Agent skill dosyaları
-.agents/skills/neon-postgres/
-.claude/skills/neon-postgres/
-.goose/skills/neon-postgres/
+
+.agents/
+.claude/
+.goose/
 
 # Proje dokümantasyon dosyaları (commit dışı bırakılacaklar)
 Thumbs.db
