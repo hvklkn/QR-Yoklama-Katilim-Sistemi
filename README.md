@@ -161,7 +161,7 @@ Uygulama **Vercel** üzerinde deploy edilebilir.
 
 ## 🎥 Demo
 
-👉 (BURAYA VERCEL LİNKİNİ EKLE)
+👉 https://vercel.com/hvklkns-projects/qr-yoklama-katilim-sistemi
 
 ---
 
