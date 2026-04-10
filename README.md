@@ -122,7 +122,7 @@ Tarayıcıdan:
 * Belirlenen yarıçap içindeyse katılım kabul edilir
 * Aksi durumda katılım reddedilir
 
-👉 Detaylı teknik açıklama: `docs/LOCATION_VALIDATION.md`
+👉 Detaylı teknik açıklama: `LOCATION_VALIDATION.md`
 
 ---
 
@@ -155,7 +155,7 @@ POST /api/attendance
 
 Uygulama **Vercel** üzerinde deploy edilebilir.
 
-👉 Detaylı kurulum: `docs/DEPLOYMENT.md`
+👉 Detaylı kurulum: `DEPLOYMENT.md`
 
 ---
 
